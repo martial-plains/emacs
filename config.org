@@ -2,13 +2,14 @@
 #+AUTHOR: Allister Isaiah Harvey
 #+DESCRIPTION: AIH's personal Emacs config
 #+STARTUP: showeverything
-#+OPTIONS: toc:2
+#+OPTIONS: toc:3
 
 * Table Of Contents :toc:
 - [[#important-programs-to-load-first][Important Programs To Load First]]
   - [[#elpaca-package-manager][Elpaca Package Manager]]
   - [[#load-evil-mode][Load Evil Mode]]
   - [[#general-keybindings][General Keybindings]]
+- [[#reload-emacs][RELOAD EMACS]]
 - [[#graphical-user-interface][GRAPHICAL USER INTERFACE]]
   - [[#fonts][FONTS]]
   - [[#menubar-toolbars-and-scrollbars][Menubar, Toolbars and Scrollbars]]
@@ -120,7 +121,10 @@
     :prefix "SPC" ;; set leader
       :global-prefix "M-SPC") ;; access leader in insert mode
 
-
+  (aih/leader-keys
+    "." '(find-file :wk "Find file")
+    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
+    "TAB TAB" '(comment-line :wk "Comment lines"))
 
   (aih/leader-keys
   "b" '(:ignore t :wk "buffer")
@@ -129,9 +133,41 @@
   "bn" '(next-buffer :wk "Next buffer")
   "bp" '(previous-buffer :wk "Previous buffer")
   "br" '(revert-buffer :wk "Revert buffer"))
+
+  (aih/leader-keys
+    "e" '(:ignore t :wk "Evaluate")    
+    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+    "e d" '(eval-defun :wk "Evaluate defun containing or after point")
+    "e e" '(eval-expression :wk "Evaluate and elisp expression")
+    "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+    "e r" '(eval-region :wk "Evaluate elisp in region")) 
+
+   (aih/leader-keys
+    "h" '(:ignore t :wk "Help")
+    "h f" '(describe-function :wk "Describe function")
+    "h v" '(describe-variable :wk "Describe variable")
+    ;;"h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :wk "Reload emacs config"))
+    "h r r" '(reload-init-file :wk "Reload emacs config"))
+
+   (aih/leader-keys
+    "t" '(:ignore t :wk "Toggle")
+    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+    "t t" '(visual-line-mode :wk "Toggle truncated lines"))
+
     )
 
 #+end_src
+
+* RELOAD EMACS
+This is just an example of how to create a simple function in Emacs.  Use this function to reload Emacs after adding changes to the config.  Yes, I am loading the user-init-file twice in this function, which is a hack because for some reason, just loading the user-init-file once does not work properly.
+
+#+begin_src emacs-lisp
+(defun reload-init-file ()
+  (interactive)
+  (load-file user-init-file)
+  (load-file user-init-file))
+#+end_src
+
 
 
 * GRAPHICAL USER INTERFACE
