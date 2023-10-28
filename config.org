@@ -24,6 +24,7 @@
 - [[#code-completion][Code Completion]]
 - [[#languages][Languages]]
   - [[#rust][Rust]]
+  - [[#swift][Swift]]
 - [[#which-key][WHICH-KEY]]
 
 * Important Programs To Load First
@@ -359,6 +360,22 @@ Buffers are pretty great, but sometimes they can be named ... less usefully.
 
 #+begin_src emacs-lisp
   (use-package rustic)
+#+end_src
+
+** Swift
+
+*** lsp-sourcekit
+#+begin_src emacs-lisp
+(use-package lsp-sourcekit
+  :after lsp-mode
+  :config
+  (setq lsp-sourcekit-executable (string-trim (shell-command-to-string "xcrun --find sourcekit-lsp"))))
+#+end_src
+
+*** swift-mode
+#+begin_src emacs-lisp
+(use-package swift-mode
+  :hook (swift-mode . (lambda () (lsp))))
 #+end_src
 
 * WHICH-KEY

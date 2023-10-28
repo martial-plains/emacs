@@ -233,10 +233,17 @@
 (use-package dap-mode)
 ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 
-;; code completion
 (use-package company :ensure t)
 
 (use-package rustic)
+
+(use-package lsp-sourcekit
+  :after lsp-mode
+  :config
+  (setq lsp-sourcekit-executable (string-trim (shell-command-to-string "xcrun --find sourcekit-lsp"))))
+
+(use-package swift-mode
+  :hook (swift-mode . (lambda () (lsp))))
 
 (use-package which-key
   :init
