@@ -213,6 +213,13 @@
 
 (require 'org-tempo)
 
+(use-package org-remoteimg :elpaca (:host github :repo "gaoDean/org-remoteimg"))
+
+;; optional: set this to wherever you want the cache to be stored
+;; (setq url-cache-directory "~/.cache/emacs/url")
+
+(setq org-display-remote-inline-images 'cache) ;; enable caching
+
 (use-package lsp-mode
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
@@ -261,3 +268,12 @@
 	which-key-max-description-length 25
 	which-key-allow-imprecise-window-fit t
 	which-key-separator " → " ))
+
+(use-package dracula-theme 
+  :ensure t
+  :load-path "themes"
+  :init
+  (setq dracula-theme-kit t)
+  :config
+  (load-theme 'dracula t)
+  )
