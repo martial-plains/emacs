@@ -20,12 +20,15 @@
   - [[#enabling-org-bullets][Enabling Org Bullets]]
   - [[#disable-electric-indent][Disable Electric Indent]]
   - [[#source-code-block-tag-expansion][Source Code Block Tag Expansion]]
+  - [[#org-remoting][Org-Remoting]]
 - [[#language-server-protocal][Language Server Protocal]]
 - [[#code-completion][Code Completion]]
 - [[#languages][Languages]]
   - [[#rust][Rust]]
   - [[#swift][Swift]]
 - [[#which-key][WHICH-KEY]]
+- [[#themes][Themes]]
+  - [[#dracula][Dracula]]
 
 * Important Programs To Load First
 ** Elpaca Package Manager
@@ -324,6 +327,17 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 (require 'org-tempo)
 #+end_src
 
+** Org-Remoting
+
+#+begin_src emacs-lisp
+(use-package org-remoteimg :elpaca (:host github :repo "gaoDean/org-remoteimg"))
+
+;; optional: set this to wherever you want the cache to be stored
+;; (setq url-cache-directory "~/.cache/emacs/url")
+
+(setq org-display-remote-inline-images 'cache) ;; enable caching
+#+end_src
+
 * Language Server Protocal
 #+begin_src emacs-lisp
 (use-package lsp-mode
@@ -398,3 +412,16 @@ Buffers are pretty great, but sometimes they can be named ... less usefully.
 	  which-key-separator " → " ))
 #+end_src
 
+* Themes
+
+** Dracula
+#+begin_src emacs-lisp
+(use-package dracula-theme 
+  :ensure t
+  :load-path "themes"
+  :init
+  (setq dracula-theme-kit t)
+  :config
+  (load-theme 'dracula t)
+  )
+#+end_src

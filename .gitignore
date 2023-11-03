@@ -49,3 +49,9 @@ flycheck_*.el
 
 # elpaca
 elpaca/
+
+# url
+url/
+
+# org mode
+org-persist/
