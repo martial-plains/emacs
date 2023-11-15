@@ -8,9 +8,13 @@ auto-save-list
 tramp
 .\#*
 
+# backup files
+backup/
+
 # Org-mode
 .org-id-locations
 *_archive
+org-persist/
 
 # flymake-mode
 *_flymake.*
@@ -52,6 +56,3 @@ elpaca/
 
 # url
 url/
-
-# org mode
-org-persist/
