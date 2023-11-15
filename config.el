@@ -169,6 +169,36 @@
 (global-display-line-numbers-mode 1)
 (global-visual-line-mode t)
 
+(set-frame-parameter nil 'alpha-background 70)
+(add-to-list 'default-frame-alist '(alpha-background . 70))
+
+ ;;(set-frame-parameter (selected-frame) 'alpha '(<active> . <inactive>))
+ ;;(set-frame-parameter (selected-frame) 'alpha <both>)
+ (set-frame-parameter (selected-frame) 'alpha '(85 . 50))
+ (add-to-list 'default-frame-alist '(alpha . (85 . 50)))
+
+(defun toggle-transparency ()
+   (interactive)
+   (let ((alpha (frame-parameter nil 'alpha)))
+     (set-frame-parameter
+      nil 'alpha
+      (if (eql (cond ((numberp alpha) alpha)
+                     ((numberp (cdr alpha)) (cdr alpha))
+                     ;; Also handle undocumented (<active> <inactive>) form.
+                     ((numberp (cadr alpha)) (cadr alpha)))
+               100)
+          '(85 . 50) '(100 . 100)))))
+ (global-set-key (kbd "C-c t") 'toggle-transparency)
+
+(use-package dracula-theme 
+  :ensure t
+  :load-path "themes"
+  :init
+  (setq dracula-theme-kit t)
+  :config
+  (load-theme 'dracula t)
+  )
+
 (use-package counsel
   :after ivy
   :config (counsel-mode))
@@ -268,12 +298,3 @@
 	which-key-max-description-length 25
 	which-key-allow-imprecise-window-fit t
 	which-key-separator " → " ))
-
-(use-package dracula-theme 
-  :ensure t
-  :load-path "themes"
-  :init
-  (setq dracula-theme-kit t)
-  :config
-  (load-theme 'dracula t)
-  )

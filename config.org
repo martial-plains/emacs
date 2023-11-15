@@ -14,6 +14,8 @@
   - [[#fonts][FONTS]]
   - [[#menubar-toolbars-and-scrollbars][Menubar, Toolbars and Scrollbars]]
   - [[#display-line-numbers-and-truncated-lines][Display Line Numbers and Truncated Lines]]
+  - [[#transparency][Transparency]]
+  - [[#themes][Themes]]
 - [[#ivy-counsel][IVY (COUNSEL)]]
 - [[#org-mode][ORG MODE]]
   - [[#enabling-table-of-contents][Enabling Table of Contents]]
@@ -27,8 +29,6 @@
   - [[#rust][Rust]]
   - [[#swift][Swift]]
 - [[#which-key][WHICH-KEY]]
-- [[#themes][Themes]]
-  - [[#dracula][Dracula]]
 
 * Important Programs To Load First
 ** Elpaca Package Manager
@@ -242,6 +242,48 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
 (global-visual-line-mode t)
 #+end_src
 
+** Transparency
+#+begin_src emacs-lisp
+(set-frame-parameter nil 'alpha-background 70)
+(add-to-list 'default-frame-alist '(alpha-background . 70))
+
+ ;;(set-frame-parameter (selected-frame) 'alpha '(<active> . <inactive>))
+ ;;(set-frame-parameter (selected-frame) 'alpha <both>)
+ (set-frame-parameter (selected-frame) 'alpha '(85 . 50))
+ (add-to-list 'default-frame-alist '(alpha . (85 . 50)))
+#+end_src
+
+Toggle transparency with
+
+#+begin_src emacs-lisp
+(defun toggle-transparency ()
+   (interactive)
+   (let ((alpha (frame-parameter nil 'alpha)))
+     (set-frame-parameter
+      nil 'alpha
+      (if (eql (cond ((numberp alpha) alpha)
+                     ((numberp (cdr alpha)) (cdr alpha))
+                     ;; Also handle undocumented (<active> <inactive>) form.
+                     ((numberp (cadr alpha)) (cadr alpha)))
+               100)
+          '(85 . 50) '(100 . 100)))))
+ (global-set-key (kbd "C-c t") 'toggle-transparency)
+#+end_src
+
+** Themes
+
+*** Dracula
+#+begin_src emacs-lisp
+(use-package dracula-theme 
+  :ensure t
+  :load-path "themes"
+  :init
+  (setq dracula-theme-kit t)
+  :config
+  (load-theme 'dracula t)
+  )
+#+end_src
+
 * IVY (COUNSEL)
 + Ivy, a generic completion mechanism for Emacs.
 + Counsel, a collection of Ivy-enhanced versions of common Emacs commands.
@@ -410,18 +452,4 @@ Buffers are pretty great, but sometimes they can be named ... less usefully.
 	  which-key-max-description-length 25
 	  which-key-allow-imprecise-window-fit t
 	  which-key-separator " → " ))
-#+end_src
-
-* Themes
-
-** Dracula
-#+begin_src emacs-lisp
-(use-package dracula-theme 
-  :ensure t
-  :load-path "themes"
-  :init
-  (setq dracula-theme-kit t)
-  :config
-  (load-theme 'dracula t)
-  )
 #+end_src
