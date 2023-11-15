@@ -9,26 +9,29 @@
   - [[#elpaca-package-manager][Elpaca Package Manager]]
   - [[#load-evil-mode][Load Evil Mode]]
   - [[#general-keybindings][General Keybindings]]
-- [[#reload-emacs][RELOAD EMACS]]
+- [[#reload-emacs][Reload Emacs]]
 - [[#text-editor][Text Editor]]
-  - [[#fonts][FONTS]]
+  - [[#font][Font]]
   - [[#menubar-toolbars-and-scrollbars][Menubar, Toolbars and Scrollbars]]
   - [[#display-line-numbers-and-truncated-lines][Display Line Numbers and Truncated Lines]]
   - [[#transparency][Transparency]]
+  - [[#code-completion][Code Completion]]
+- [[#workbench][Workbench]]
+  - [[#local-history][Local History]]
   - [[#themes][Themes]]
-- [[#ivy-counsel][IVY (COUNSEL)]]
-- [[#org-mode][ORG MODE]]
+- [[#org-mode][Org Mode]]
   - [[#enabling-table-of-contents][Enabling Table of Contents]]
   - [[#enabling-org-bullets][Enabling Org Bullets]]
   - [[#disable-electric-indent][Disable Electric Indent]]
   - [[#source-code-block-tag-expansion][Source Code Block Tag Expansion]]
   - [[#org-remoting][Org-Remoting]]
 - [[#language-server-protocal][Language Server Protocal]]
-- [[#code-completion][Code Completion]]
 - [[#languages][Languages]]
   - [[#rust][Rust]]
   - [[#swift][Swift]]
-- [[#which-key][WHICH-KEY]]
+- [[#packages][Packages]]
+  - [[#which-key][WHICH-KEY]]
+  - [[#ivy-counsel][Ivy (Counsel)]]
 
 * Important Programs To Load First
 ** Elpaca Package Manager
@@ -167,7 +170,7 @@
 
 #+end_src
 
-* RELOAD EMACS
+* Reload Emacs
 This is just an example of how to create a simple function in Emacs.  Use this function to reload Emacs after adding changes to the config.  Yes, I am loading the user-init-file twice in this function, which is a hack because for some reason, just loading the user-init-file once does not work properly.
 
 #+begin_src emacs-lisp
@@ -182,7 +185,7 @@ This is just an example of how to create a simple function in Emacs.  Use this f
 * Text Editor
 Let's make GNU Emacs look a little better.
 
-** FONTS
+** Font
 Defining the various fonts that Emacs will use.
 
 #+begin_src emacs-lisp
@@ -270,8 +273,27 @@ Toggle transparency with
  (global-set-key (kbd "C-c t") 'toggle-transparency)
 #+end_src
 
-** Themes
+** Code Completion
+#+begin_src emacs-lisp
+(use-package company :ensure t)
+#+end_src
 
+
+* Workbench
+** Local History
+
+Controls whether local file history is enabled. When enabled, the file contents of an editor that is saved will be stored to a backup location to be able to restore or review the contents later
+#+begin_src emacs-lisp
+(setq backup-directory-alist '(("." . "~/.config/emacs/backup"))
+  backup-by-copying t    ; Don't delink hardlinks
+  version-control t      ; Use version numbers on backups
+  delete-old-versions t  ; Automatically delete excess backups
+  kept-new-versions 20   ; how many of the newest versions to keep
+  kept-old-versions 5    ; and how many of the old
+  )
+#+end_src
+
+** Themes
 *** Dracula
 #+begin_src emacs-lisp
 (use-package dracula-theme 
@@ -284,47 +306,8 @@ Toggle transparency with
   )
 #+end_src
 
-* IVY (COUNSEL)
-+ Ivy, a generic completion mechanism for Emacs.
-+ Counsel, a collection of Ivy-enhanced versions of common Emacs commands.
-+ Ivy-rich allows us to add descriptions alongside the commands in M-x.
 
-#+begin_src emacs-lisp
-  (use-package counsel
-    :after ivy
-    :config (counsel-mode))
-  
-  (use-package ivy
-    :bind
-    ;; ivy-resume resumes the last Ivy-based completion.
-    (("C-c C-r" . ivy-resume)
-     ("C-x B" . ivy-switch-buffer-other-window))
-    :custom
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-count-format "(%d/%d) ")
-    (setq enable-recursive-minibuffers t)
-    :config
-    (ivy-mode))
-
-  (use-package all-the-icons-ivy-rich
-    :ensure t
-    :init (all-the-icons-ivy-rich-mode 1))
-
-  (use-package ivy-rich
-    :after ivy
-    :ensure t
-    :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
-    :custom
-    (ivy-virtual-abbreviate 'full
-     ivy-rich-switch-buffer-align-virtual-buffer t
-     ivy-rich-path-style 'abbrev)
-    :config
-    (ivy-set-display-transformer 'ivy-switch-buffer
-                                 'ivy-rich-switch-buffer-transformer))
-
-#+end_src
-
-* ORG MODE
+* Org Mode
 ** Enabling Table of Contents
 #+begin_src emacs-lisp
   (use-package toc-org
@@ -403,11 +386,6 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 #+end_src
 
-* Code Completion
-#+begin_src emacs-lisp
-(use-package company :ensure t)
-#+end_src
-
 * Languages
 ** Rust
 
@@ -434,7 +412,9 @@ Buffers are pretty great, but sometimes they can be named ... less usefully.
   :hook (swift-mode . (lambda () (lsp))))
 #+end_src
 
-* WHICH-KEY
+
+* Packages
+** WHICH-KEY
 #+begin_src emacs-lisp
   (use-package which-key
     :init
@@ -452,4 +432,44 @@ Buffers are pretty great, but sometimes they can be named ... less usefully.
 	  which-key-max-description-length 25
 	  which-key-allow-imprecise-window-fit t
 	  which-key-separator " → " ))
+#+end_src
+
+** Ivy (Counsel)
++ Ivy, a generic completion mechanism for Emacs.
++ Counsel, a collection of Ivy-enhanced versions of common Emacs commands.
++ Ivy-rich allows us to add descriptions alongside the commands in M-x.
+
+#+begin_src emacs-lisp
+  (use-package counsel
+    :after ivy
+    :config (counsel-mode))
+  
+  (use-package ivy
+    :bind
+    ;; ivy-resume resumes the last Ivy-based completion.
+    (("C-c C-r" . ivy-resume)
+     ("C-x B" . ivy-switch-buffer-other-window))
+    :custom
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-count-format "(%d/%d) ")
+    (setq enable-recursive-minibuffers t)
+    :config
+    (ivy-mode))
+
+  (use-package all-the-icons-ivy-rich
+    :ensure t
+    :init (all-the-icons-ivy-rich-mode 1))
+
+  (use-package ivy-rich
+    :after ivy
+    :ensure t
+    :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
+    :custom
+    (ivy-virtual-abbreviate 'full
+     ivy-rich-switch-buffer-align-virtual-buffer t
+     ivy-rich-path-style 'abbrev)
+    :config
+    (ivy-set-display-transformer 'ivy-switch-buffer
+                                 'ivy-rich-switch-buffer-transformer))
+
 #+end_src
