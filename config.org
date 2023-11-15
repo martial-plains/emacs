@@ -10,7 +10,7 @@
   - [[#load-evil-mode][Load Evil Mode]]
   - [[#general-keybindings][General Keybindings]]
 - [[#reload-emacs][RELOAD EMACS]]
-- [[#graphical-user-interface][GRAPHICAL USER INTERFACE]]
+- [[#text-editor][Text Editor]]
   - [[#fonts][FONTS]]
   - [[#menubar-toolbars-and-scrollbars][Menubar, Toolbars and Scrollbars]]
   - [[#display-line-numbers-and-truncated-lines][Display Line Numbers and Truncated Lines]]
@@ -179,7 +179,7 @@ This is just an example of how to create a simple function in Emacs.  Use this f
 
 
 
-* GRAPHICAL USER INTERFACE
+* Text Editor
 Let's make GNU Emacs look a little better.
 
 ** FONTS
