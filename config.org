@@ -1,4 +1,4 @@
-#+TITLE: AIH's Emacs Config
+
 #+AUTHOR: Allister Isaiah Harvey
 #+DESCRIPTION: AIH's personal Emacs config
 #+STARTUP: showeverything
@@ -254,7 +254,7 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
  (add-to-list 'default-frame-alist '(alpha . (85 . 50)))
 #+end_src
 
-Toggle transparency with $x^2$
+Toggle transparency with ~C-c t~
 
 #+begin_src emacs-lisp
 (defun toggle-transparency ()
@@ -361,7 +361,7 @@ Controls whether local file history is enabled. When enabled, the file contents 
       :init (add-hook 'org-mode-hook 'toc-org-enable))
 #+end_src
 
-*** Enabling Org Bullet
+*** Enabling Org Bullets
 Org-bullets gives us attractive bullets rather than asterisks.
 
 #+begin_src emacs-lisp
@@ -415,7 +415,7 @@ Org-tempo is not a separate package but a module within org that can be enabled.
         org-src-fontify-natively t
         org-src-tab-acts-natively t)
 
-    (defconst load-language-alist
+  (defconst load-language-alist
       '((emacs-lisp . t)
         (perl       . t)
         (python     . t)
@@ -426,15 +426,84 @@ Org-tempo is not a separate package but a module within org that can be enabled.
         (java       . t)
         (shell      . t)
       "Alist of org ob languages.")
+  )
 #+end_src
 
 *** Visuals
 **** Org-Modern
+
 #+begin_src emacs-lisp
-    (use-package org-modern
-      :hook ((org-mode . org-modern-mode)
-             (org-agenda-finalize . org-modern-agenda)
-             ))
+(use-package org-modern
+  :hook (org-mode . org-modern-mode)
+  :config
+  (setq org-modern-star '("◉" "○" "✸" "✿" "✤" "✜" "◆" "▶")
+        org-modern-table-vertical 1
+        org-modern-table-horizontal 0.2
+        org-modern-list '((43 . "➤")
+                          (45 . "–")
+                          (42 . "•"))
+        org-modern-todo-faces
+        '(("TODO" :inverse-video t :inherit org-todo)
+          ("PROJ" :inverse-video t :inherit +org-todo-project)
+          ("STRT" :inverse-video t :inherit +org-todo-active)
+          ("[-]"  :inverse-video t :inherit +org-todo-active)
+          ("HOLD" :inverse-video t :inherit +org-todo-onhold)
+          ("WAIT" :inverse-video t :inherit +org-todo-onhold)
+          ("[?]"  :inverse-video t :inherit +org-todo-onhold)
+          ("KILL" :inverse-video t :inherit +org-todo-cancel)
+          ("NO"   :inverse-video t :inherit +org-todo-cancel))
+        org-modern-footnote
+        (cons nil (cadr org-script-display))
+        org-modern-block-fringe nil
+        org-modern-block-name
+        '((t . t)
+          ("src" "»" "«")
+          ("example" "»–" "–«")
+          ("quote" "❝" "❞")
+          ("export" "⏩" "⏪"))
+        org-modern-progress nil
+        org-modern-priority nil
+        org-modern-horizontal-rule (make-string 36 ?─)
+        org-modern-keyword
+        '((t . t)
+          ("title" . "𝙏")
+          ("subtitle" . "𝙩")
+          ("author" . "𝘼")
+          ("email" . #("" 0 1 (display (raise -0.14))))
+          ("date" . "𝘿")
+          ("property" . "☸")
+          ("options" . "⌥")
+          ("startup" . "⏻")
+          ("macro" . "𝓜")
+          ("bind" . #("" 0 1 (display (raise -0.1))))
+          ("bibliography" . "")
+          ("print_bibliography" . #("" 0 1 (display (raise -0.1))))
+          ("cite_export" . "⮭")
+          ("print_glossary" . #("ᴬᶻ" 0 1 (display (raise -0.1))))
+          ("glossary_sources" . #("" 0 1 (display (raise -0.14))))
+          ("include" . "⇤")
+          ("setupfile" . "⇚")
+          ("html_head" . "🅷")
+          ("html" . "🅗")
+          ("latex_class" . "🄻")
+          ("latex_class_options" . #("🄻" 1 2 (display (raise -0.14))))
+          ("latex_header" . "🅻")
+          ("latex_header_extra" . "🅻⁺")
+          ("latex" . "🅛")
+          ("beamer_theme" . "🄱")
+          ("beamer_color_theme" . #("🄱" 1 2 (display (raise -0.12))))
+          ("beamer_font_theme" . "🄱𝐀")
+          ("beamer_header" . "🅱")
+          ("beamer" . "🅑")
+          ("attr_latex" . "🄛")
+          ("attr_html" . "🄗")
+          ("attr_org" . "⒪")
+          ("call" . #("" 0 1 (display (raise -0.15))))
+          ("name" . "⁍")
+          ("header" . "›")
+          ("caption" . "☰")
+          ("results" . "🠶")))
+  )
 #+end_src
 
 * Language Server Protocal
