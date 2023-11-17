@@ -24,6 +24,7 @@
   - [[#org-mode][Org Mode]]
 - [[#language-server-protocal][Language Server Protocal]]
 - [[#languages][Languages]]
+  - [[#python][Python]]
   - [[#rust][Rust]]
   - [[#swift][Swift]]
 - [[#packages][Packages]]
@@ -242,6 +243,7 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
 #+end_src
 
 ** Transparency
+
 #+begin_src emacs-lisp
 (set-frame-parameter nil 'alpha-background 70)
 (add-to-list 'default-frame-alist '(alpha-background . 70))
@@ -252,7 +254,7 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
  (add-to-list 'default-frame-alist '(alpha . (85 . 50)))
 #+end_src
 
-Toggle transparency with
+Toggle transparency with $x^2$
 
 #+begin_src emacs-lisp
 (defun toggle-transparency ()
@@ -318,8 +320,8 @@ Toggle transparency with
 
 * Workbench
 ** Local History
-
 Controls whether local file history is enabled. When enabled, the file contents of an editor that is saved will be stored to a backup location to be able to restore or review the contents later
+
 #+begin_src emacs-lisp
 (setq backup-directory-alist '(("." . "~/.config/emacs/backup"))
   backup-by-copying t    ; Don't delink hardlinks
@@ -359,7 +361,7 @@ Controls whether local file history is enabled. When enabled, the file contents 
       :init (add-hook 'org-mode-hook 'toc-org-enable))
 #+end_src
 
-*** Enabling Org Bullets
+*** Enabling Org Bullet
 Org-bullets gives us attractive bullets rather than asterisks.
 
 #+begin_src emacs-lisp
@@ -407,6 +409,34 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 (setq org-display-remote-inline-images 'cache) ;; enable caching
 #+end_src
 
+*** Babel
+#+begin_src emacs-lisp
+  (setq org-confirm-babel-evaluate nil
+        org-src-fontify-natively t
+        org-src-tab-acts-natively t)
+
+    (defconst load-language-alist
+      '((emacs-lisp . t)
+        (perl       . t)
+        (python     . t)
+        (js         . t)
+        (css        . t)
+        (sass       . t)
+        (C          . t)
+        (java       . t)
+        (shell      . t)
+      "Alist of org ob languages.")
+#+end_src
+
+*** Visuals
+**** Org-Modern
+#+begin_src emacs-lisp
+    (use-package org-modern
+      :hook ((org-mode . org-modern-mode)
+             (org-agenda-finalize . org-modern-agenda)
+             ))
+#+end_src
+
 * Language Server Protocal
 #+begin_src emacs-lisp
 (use-package lsp-mode
@@ -431,8 +461,16 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 #+end_src
 
 * Languages
-** Rust
+** Python
+#+begin_src emacs-lisp
+  (use-package lsp-pyright
+    :ensure t
+    :hook (python-mode . (lambda ()
+                            (require 'lsp-pyright)
+                            (lsp))))  ; or lsp-deferred
+#+end_src
 
+** Rust
 *** rustic
 Buffers are pretty great, but sometimes they can be named ... less usefully.
 
@@ -441,7 +479,6 @@ Buffers are pretty great, but sometimes they can be named ... less usefully.
 #+end_src
 
 ** Swift
-
 *** lsp-sourcekit
 #+begin_src emacs-lisp
 (use-package lsp-sourcekit

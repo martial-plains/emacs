@@ -263,6 +263,14 @@
 
 (setq org-display-remote-inline-images 'cache) ;; enable caching
 
+(use-package org-fragtog
+  :hook (org-mode-hook . org-fragtog-mode))
+
+(use-package org-modern
+  :hook ((org-mode . org-modern-mode)
+         (org-agenda-finalize . org-modern-agenda)
+         ))
+
 (use-package lsp-mode
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
@@ -282,6 +290,12 @@
 ;; optionally if you want to use debugger
 (use-package dap-mode)
 ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
 
 (use-package rustic)
 
