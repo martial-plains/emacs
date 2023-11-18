@@ -224,6 +224,9 @@
   (ivy-set-display-transformer 'ivy-switch-buffer
                                'ivy-rich-switch-buffer-transformer))
 
+(use-package flycheck
+  :hook ('after-init-hook #'global-flycheck-mode))
+
 (setq backup-directory-alist '(("." . "~/.config/emacs/backup"))
   backup-by-copying t    ; Don't delink hardlinks
   version-control t      ; Use version numbers on backups
@@ -267,18 +270,18 @@
       org-src-fontify-natively t
       org-src-tab-acts-natively t)
 
-(defconst load-language-alist
-    '((emacs-lisp . t)
-      (perl       . t)
-      (python     . t)
-      (js         . t)
-      (css        . t)
-      (sass       . t)
-      (C          . t)
-      (java       . t)
-      (shell      . t)
-    "Alist of org ob languages.")
-)
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (perl       . t)
+   (python     . t)
+   (js         . t)
+   (css        . t)
+   (sass       . t)
+   (C          . t)
+   (java       . t)
+   (shell      . t))
+ )
 
 (use-package org-modern
   :hook (org-mode . org-modern-mode)

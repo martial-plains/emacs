@@ -17,6 +17,7 @@
   - [[#transparency][Transparency]]
   - [[#code-completion][Code Completion]]
 - [[#workbench][Workbench]]
+  - [[#syntax-checking][Syntax Checking]]
   - [[#local-history][Local History]]
   - [[#themes][Themes]]
 - [[#features][Features]]
@@ -319,6 +320,13 @@ Toggle transparency with ~C-c t~
 
 
 * Workbench
+** Syntax Checking
+
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :hook ('after-init-hook #'global-flycheck-mode))
+#+end_src
+
 ** Local History
 Controls whether local file history is enabled. When enabled, the file contents of an editor that is saved will be stored to a backup location to be able to restore or review the contents later
 
@@ -411,22 +419,22 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 
 *** Babel
 #+begin_src emacs-lisp
-  (setq org-confirm-babel-evaluate nil
-        org-src-fontify-natively t
-        org-src-tab-acts-natively t)
+(setq org-confirm-babel-evaluate nil
+      org-src-fontify-natively t
+      org-src-tab-acts-natively t)
 
-  (defconst load-language-alist
-      '((emacs-lisp . t)
-        (perl       . t)
-        (python     . t)
-        (js         . t)
-        (css        . t)
-        (sass       . t)
-        (C          . t)
-        (java       . t)
-        (shell      . t)
-      "Alist of org ob languages.")
-  )
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (perl       . t)
+   (python     . t)
+   (js         . t)
+   (css        . t)
+   (sass       . t)
+   (C          . t)
+   (java       . t)
+   (shell      . t))
+ )
 #+end_src
 
 *** Visuals
