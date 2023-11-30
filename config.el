@@ -1,58 +1,8 @@
-(defvar elpaca-installer-version 0.5)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-			      :ref nil
-			      :files (:defaults (:exclude "extensions"))
-			      :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-	(if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-		 ((zerop (call-process "git" nil buffer t "clone"
-				       (plist-get order :repo) repo)))
-		 ((zerop (call-process "git" nil buffer t "checkout"
-				       (or (plist-get order :ref) "--"))))
-		 (emacs (concat invocation-directory invocation-name))
-		 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-				       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-		 ((require 'elpaca))
-		 ((elpaca-generate-autoloads "elpaca" repo)))
-	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-	  (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+(add-to-list 'load-path "~/.config/emacs/scripts/")
 
-;; Install use-package support
-(elpaca elpaca-use-package
-  ;; Enable :elpaca use-package keyword.
-  (elpaca-use-package-mode)
-  ;; Assume :elpaca t unless otherwise specified.
-  (setq elpaca-use-package-by-default t))
+(require 'elpaca-setup)  ;; The Elpaca Package Manager
+(require 'buffer-move)   ;; Buffer-move for better window management
 
-;; Block until current queue processed.
-(elpaca-wait)
-
-;;When installing a package which modifies a form used at the top-level
-;;(e.g. a package which adds a use-package key word),
-;;use `elpaca-wait' to block until that package has been installed/configured.
-;;For example:
-;;(use-package general :demand t)
-;;(elpaca-wait)
-
-;; Expands to: (elpaca evil (use-package evil :demand t))
 (use-package evil
   :init         ;; tweak evil's configuration before loading it
   (setq evil-want-integration t) ;; This is optional since it's already set to true
@@ -77,47 +27,47 @@
 
 (use-package general
   :config
-      (general-evil-setup)
+  (general-evil-setup)
 
   ;; setup up 'SPC' as the global leader key
-      (general-create-definer aih/leader-keys
-  :states '(normal insert virtual emacs)
-  :keymaps 'override
-  :prefix "SPC" ;; set leader
+  (general-create-definer aih/leader-keys
+    :states '(normal insert virtual emacs)
+    :keymaps 'override
+    :prefix "SPC" ;; set leader
     :global-prefix "M-SPC") ;; access leader in insert mode
 
-(aih/leader-keys
-  "." '(find-file :wk "Find file")
-  "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
-  "TAB TAB" '(comment-line :wk "Comment lines"))
+  (aih/leader-keys
+    "." '(find-file :wk "Find file")
+    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
+    "TAB TAB" '(comment-line :wk "Comment lines"))
 
-(aih/leader-keys
-"b" '(:ignore t :wk "buffer")
-"bb" '(switch-to-buffer :wk "Switch buffer")
-"bk" '(kill-this-buffer :wk "Kill this buffer")
-"bn" '(next-buffer :wk "Next buffer")
-"bp" '(previous-buffer :wk "Previous buffer")
-"br" '(revert-buffer :wk "Revert buffer"))
+  (aih/leader-keys
+    "b" '(:ignore t :wk "buffer")
+    "bb" '(switch-to-buffer :wk "Switch buffer")
+    "bk" '(kill-this-buffer :wk "Kill this buffer")
+    "bn" '(next-buffer :wk "Next buffer")
+    "bp" '(previous-buffer :wk "Previous buffer")
+    "br" '(revert-buffer :wk "Revert buffer"))
 
-(aih/leader-keys
-  "e" '(:ignore t :wk "Evaluate")    
-  "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
-  "e d" '(eval-defun :wk "Evaluate defun containing or after point")
-  "e e" '(eval-expression :wk "Evaluate and elisp expression")
-  "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
-  "e r" '(eval-region :wk "Evaluate elisp in region")) 
+  (aih/leader-keys
+    "e" '(:ignore t :wk "Evaluate")    
+    "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+    "e d" '(eval-defun :wk "Evaluate defun containing or after point")
+    "e e" '(eval-expression :wk "Evaluate and elisp expression")
+    "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+    "e r" '(eval-region :wk "Evaluate elisp in region")) 
 
- (aih/leader-keys
-  "h" '(:ignore t :wk "Help")
-  "h f" '(describe-function :wk "Describe function")
-  "h v" '(describe-variable :wk "Describe variable")
-  ;;"h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :wk "Reload emacs config"))
-  "h r r" '(reload-init-file :wk "Reload emacs config"))
+  (aih/leader-keys
+    "h" '(:ignore t :wk "Help")
+    "h f" '(describe-function :wk "Describe function")
+    "h v" '(describe-variable :wk "Describe variable")
+    ;;"h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :wk "Reload emacs config"))
+    "h r r" '(reload-init-file :wk "Reload emacs config"))
 
- (aih/leader-keys
-  "t" '(:ignore t :wk "Toggle")
-  "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
-  "t t" '(visual-line-mode :wk "Toggle truncated lines"))
+  (aih/leader-keys
+    "t" '(:ignore t :wk "Toggle")
+    "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+    "t t" '(visual-line-mode :wk "Toggle truncated lines"))
 
   )
 
@@ -126,25 +76,46 @@
   (load-file user-init-file)
   (load-file user-init-file))
 
+(use-package dashboard
+  :ensure t 
+  :init
+  (setq initial-buffer-choice 'dashboard-open)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
+  ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
+  (setq dashboard-startup-banner 'official)  ;; use official Emacs logo as banner
+  (setq dashboard-center-content nil) ;; set to 't' for centered content
+  (setq dashboard-items '((recents . 5)
+                          (agenda . 5 )
+                          (bookmarks . 3)
+                          (projects . 3)
+                          (registers . 3)))
+  :custom 
+  (dashboard-modify-heading-icons '((recents . "file-text")
+                                    (bookmarks . "book")))
+  :config
+  (dashboard-setup-startup-hook))
+
 (set-face-attribute 'default nil
-  :font "Cascadia Code"
-  :height 110
-  :weight 'medium)
+                    :font "Cascadia Code"
+                    :height 110
+                    :weight 'medium)
 (set-face-attribute 'variable-pitch nil
-  :font "Courier New"
-  :height 120
-  :weight 'medium)
+                    :font "Courier New"
+                    :height 120
+                    :weight 'medium)
 (set-face-attribute 'fixed-pitch nil
-  :font "Cascadia Code"
-  :height 110
-  :weight 'medium)
+                    :font "Cascadia Code"
+                    :height 110
+                    :weight 'medium)
 ;; Makes commented text and keywords italics.
 ;; This is working in emacsclient but not emacs.
 ;; Your font must have an italic face available.
 (set-face-attribute 'font-lock-comment-face nil
-  :slant 'italic)
+                    :slant 'italic)
 (set-face-attribute 'font-lock-keyword-face nil
-  :slant 'italic)
+                    :slant 'italic)
 
 ;; This sets the default font on all graphical frames created after restarting Emacs.
 ;; Does the same thing as 'set-face-attribute default' above, but emacsclient fonts
@@ -160,9 +131,9 @@
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 
 (if (eq system-type 'darwin) ;; enables menubar for macOS
-(menu-bar-mode t)
-(menu-bar-mode -1)
-)
+    (menu-bar-mode t)
+  (menu-bar-mode -1)
+  )
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
@@ -172,23 +143,23 @@
 (set-frame-parameter nil 'alpha-background 70)
 (add-to-list 'default-frame-alist '(alpha-background . 70))
 
- ;;(set-frame-parameter (selected-frame) 'alpha '(<active> . <inactive>))
- ;;(set-frame-parameter (selected-frame) 'alpha <both>)
- (set-frame-parameter (selected-frame) 'alpha '(85 . 50))
- (add-to-list 'default-frame-alist '(alpha . (85 . 50)))
+;;(set-frame-parameter (selected-frame) 'alpha '(<active> . <inactive>))
+;;(set-frame-parameter (selected-frame) 'alpha <both>)
+(set-frame-parameter (selected-frame) 'alpha '(85 . 50))
+(add-to-list 'default-frame-alist '(alpha . (85 . 50)))
 
 (defun toggle-transparency ()
-   (interactive)
-   (let ((alpha (frame-parameter nil 'alpha)))
-     (set-frame-parameter
-      nil 'alpha
-      (if (eql (cond ((numberp alpha) alpha)
-                     ((numberp (cdr alpha)) (cdr alpha))
-                     ;; Also handle undocumented (<active> <inactive>) form.
-                     ((numberp (cadr alpha)) (cadr alpha)))
-               100)
-          '(85 . 50) '(100 . 100)))))
- (global-set-key (kbd "C-c t") 'toggle-transparency)
+  (interactive)
+  (let ((alpha (frame-parameter nil 'alpha)))
+    (set-frame-parameter
+     nil 'alpha
+     (if (eql (cond ((numberp alpha) alpha)
+                    ((numberp (cdr alpha)) (cdr alpha))
+                    ;; Also handle undocumented (<active> <inactive>) form.
+                    ((numberp (cadr alpha)) (cadr alpha)))
+              100)
+         '(85 . 50) '(100 . 100)))))
+(global-set-key (kbd "C-c t") 'toggle-transparency)
 
 (use-package company :ensure t)
 
@@ -218,8 +189,8 @@
   :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
   :custom
   (ivy-virtual-abbreviate 'full
-   ivy-rich-switch-buffer-align-virtual-buffer t
-   ivy-rich-path-style 'abbrev)
+                          ivy-rich-switch-buffer-align-virtual-buffer t
+                          ivy-rich-path-style 'abbrev)
   :config
   (ivy-set-display-transformer 'ivy-switch-buffer
                                'ivy-rich-switch-buffer-transformer))
@@ -228,12 +199,12 @@
   :hook ('after-init-hook #'global-flycheck-mode))
 
 (setq backup-directory-alist '(("." . "~/.config/emacs/backup"))
-  backup-by-copying t    ; Don't delink hardlinks
-  version-control t      ; Use version numbers on backups
-  delete-old-versions t  ; Automatically delete excess backups
-  kept-new-versions 20   ; how many of the newest versions to keep
-  kept-old-versions 5    ; and how many of the old
-  )
+      backup-by-copying t    ; Don't delink hardlinks
+      version-control t      ; Use version numbers on backups
+      delete-old-versions t  ; Automatically delete excess backups
+      kept-new-versions 20   ; how many of the newest versions to keep
+      kept-old-versions 5    ; and how many of the old
+      )
 
 (use-package dracula-theme 
   :ensure t
@@ -245,11 +216,34 @@
   )
 
 (use-package vterm
-    :ensure t)
+  :ensure t
+  :config (setq vterm-max-scrollback 5000))
+
+(use-package vterm-toggle
+  :after vterm
+  :config
+  ;; When running programs in Vterm and in 'normal' mode, make sure that ESC
+  ;; kills the program as it would in most standard terminal programs.
+  (evil-define-key 'normal vterm-mode-map (kbd "<escape>") 'vterm--self-insert)
+  (setq vterm-toggle-fullscreen-p nil)
+  (setq vterm-toggle-scope 'project)
+  (add-to-list 'display-buffer-alist
+               '((lambda (buffer-or-name _)
+                   (let ((buffer (get-buffer buffer-or-name)))
+                     (with-current-buffer buffer
+                       (or (equal major-mode 'vterm-mode)
+                           (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+                 (display-buffer-reuse-window display-buffer-at-bottom)
+                 ;;(display-buffer-reuse-window display-buffer-in-direction)
+                 ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+                 ;;(direction . bottom)
+                 ;;(dedicated . t) ;dedicated is supported in emacs27
+                 (reusable-frames . visible)
+                 (window-height . 0.4))))
 
 (use-package toc-org
-    :commands toc-org-enable
-    :init (add-hook 'org-mode-hook 'toc-org-enable))
+  :commands toc-org-enable
+  :init (add-hook 'org-mode-hook 'toc-org-enable))
 
 (add-hook 'org-mode-hook 'org-indent-mode)
 (use-package org-bullets)
@@ -378,8 +372,8 @@
 (use-package lsp-pyright
   :ensure t
   :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp))))  ; or lsp-deferred
+                         (require 'lsp-pyright)
+                         (lsp))))  ; or lsp-deferred
 
 (use-package rustic)
 
@@ -393,17 +387,56 @@
 
 (use-package which-key
   :init
-    (which-key-mode 1)
+  (which-key-mode 1)
   :config
   (setq which-key-side-window-location 'bottom
-	which-key-sort-order #'which-key-key-order-alpha
-	which-key-sort-uppercase-first nil
-	which-key-add-column-padding 1
-	which-key-max-display-columns nil
-	which-key-min-display-lines 6
-	which-key-side-window-slot -10
-	which-key-side-window-max-height 0.25
-	which-key-idle-delay 0.8
-	which-key-max-description-length 25
-	which-key-allow-imprecise-window-fit t
-	which-key-separator " → " ))
+        which-key-sort-order #'which-key-key-order-alpha
+        which-key-sort-uppercase-first nil
+        which-key-add-column-padding 1
+        which-key-max-display-columns nil
+        which-key-min-display-lines 6
+        which-key-side-window-slot -10
+        which-key-side-window-max-height 0.25
+        which-key-idle-delay 0.8
+        which-key-max-description-length 25
+        which-key-allow-imprecise-window-fit t
+        which-key-separator " → " ))
+
+(use-package rainbow-mode
+  :diminish
+  :hook org-mode prog-mode)
+
+(use-package rainbow-delimiters
+  :hook ((emacs-lisp-mode . rainbow-delimiters-mode)
+         (clojure-mode . rainbow-delimiters-mode)))
+
+(use-package projectile
+  :config
+  (projectile-mode 1)
+  (if (eq system-type 'darwin)
+      (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map) ;; Recommended keymap prefix on macOS
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map) ;; Recommended keymap prefix on Windows/Linux
+    )
+  )
+
+(use-package perspective
+  :custom
+  ;; NOTE! I have also set 'SCP =' to open the perspective menu.
+  ;; I'm only setting the additional binding because setting it
+  ;; helps suppress an annoying warning message.
+  (persp-mode-prefix-key (kbd "C-c M-p"))
+  :init 
+  (persp-mode)
+  :config
+  ;; Sets a file to write to when we save states
+  (setq persp-state-default-file "~/.config/emacs/sessions"))
+
+;; This will group buffers by persp-name in ibuffer.
+(add-hook 'ibuffer-hook
+          (lambda ()
+            (persp-ibuffer-set-filter-groups)
+            (unless (eq ibuffer-sorting-mode 'alphabetic)
+              (ibuffer-do-sort-by-alphabetic))))
+
+;; Automatically save perspective states to file when Emacs exits.
+(add-hook 'kill-emacs-hook #'persp-state-save)
