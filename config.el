@@ -38,7 +38,7 @@
 
   (aih/leader-keys
     "." '(find-file :wk "Find file")
-    "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit emacs config")
+    "f c" '((lambda () (interactive) (find-file (concat user-emacs-directory "config.org"))) :wk "Edit emacs config")
     "TAB TAB" '(comment-line :wk "Comment lines"))
 
   (aih/leader-keys
@@ -50,12 +50,12 @@
     "br" '(revert-buffer :wk "Revert buffer"))
 
   (aih/leader-keys
-    "e" '(:ignore t :wk "Evaluate")    
+    "e" '(:ignore t :wk "Evaluate")
     "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
     "e d" '(eval-defun :wk "Evaluate defun containing or after point")
     "e e" '(eval-expression :wk "Evaluate and elisp expression")
     "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
-    "e r" '(eval-region :wk "Evaluate elisp in region")) 
+    "e r" '(eval-region :wk "Evaluate elisp in region"))
 
   (aih/leader-keys
     "h" '(:ignore t :wk "Help")
@@ -69,6 +69,24 @@
     "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
     "t t" '(visual-line-mode :wk "Toggle truncated lines"))
 
+  (aih/leader-keys
+    "w" '(:ignore t :wk "Windows")
+    ;; Window splits
+    "w c" '(evil-window-delete :wk "Close window")
+    "w n" '(evil-window-new :wk "New window")
+    "w s" '(evil-window-split :wk "Horizontal split window")
+    "w v" '(evil-window-vsplit :wk "Vertical split window")
+    ;; Window motions
+    "w h" '(evil-window-left :wk "Window left")
+    "w j" '(evil-window-down :wk "Window down")
+    "w k" '(evil-window-up :wk "Window up")
+    "w l" '(evil-window-right :wk "Window right")
+    "w w" '(evil-window-next :wk "Goto next window")
+    ;; Move Windows
+    "w H" '(buf-move-left :wk "Buffer move left")
+    "w J" '(buf-move-down :wk "Buffer move down")
+    "w K" '(buf-move-up :wk "Buffer move up")
+    "w L" '(buf-move-right :wk "Buffer move right"))
   )
 
 (defun reload-init-file ()
@@ -77,7 +95,7 @@
   (load-file user-init-file))
 
 (use-package dashboard
-  :ensure t 
+  :ensure t
   :init
   (setq initial-buffer-choice 'dashboard-open)
   (setq dashboard-set-heading-icons t)
@@ -91,7 +109,7 @@
                           (bookmarks . 3)
                           (projects . 3)
                           (registers . 3)))
-  :custom 
+  :custom
   (dashboard-modify-heading-icons '((recents . "file-text")
                                     (bookmarks . "book")))
   :config
@@ -198,7 +216,7 @@
 (use-package flycheck
   :hook ('after-init-hook #'global-flycheck-mode))
 
-(setq backup-directory-alist '(("." . "~/.config/emacs/backup"))
+(setq backup-directory-alist `((".*" . ,temporary-file-directory))
       backup-by-copying t    ; Don't delink hardlinks
       version-control t      ; Use version numbers on backups
       delete-old-versions t  ; Automatically delete excess backups
@@ -206,7 +224,7 @@
       kept-old-versions 5    ; and how many of the old
       )
 
-(use-package dracula-theme 
+(use-package dracula-theme
   :ensure t
   :load-path "themes"
   :init
@@ -425,7 +443,7 @@
   ;; I'm only setting the additional binding because setting it
   ;; helps suppress an annoying warning message.
   (persp-mode-prefix-key (kbd "C-c M-p"))
-  :init 
+  :init
   (persp-mode)
   :config
   ;; Sets a file to write to when we save states
