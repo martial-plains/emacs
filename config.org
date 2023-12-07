@@ -35,6 +35,7 @@
   - [[#rainbow-delimiters][Rainbow Delimiters]]
   - [[#projectile][Projectile]]
   - [[#perspective][Perspective]]
+  - [[#org-auto-tangle][org-auto-tangle]]
 
 * Important Programs To Load First
 ** Adding the scripts directory to path
@@ -674,4 +675,12 @@ Perspective provides multiple named workspaces (or “perspectives”) in Emacs,
 
   ;; Automatically save perspective states to file when Emacs exits.
   (add-hook 'kill-emacs-hook #'persp-state-save)
+#+end_src
+** org-auto-tangle
+a simple emacs package to allow org file tangling upon save
+#+begin_src emacs-lisp
+  (use-package org-auto-tangle
+    :load-path "site-lisp/org-auto-tangle/"    ;; this line is necessary only if you cloned the repo in your site-lisp directory 
+    :defer t
+    :hook (org-mode . org-auto-tangle-mode))
 #+end_src
