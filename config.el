@@ -26,6 +26,11 @@
 ;; Don't install anything. Defer execution of BODY
 (elpaca nil (message "deferred"))
 
+;; Displayes cursor correctly in the terminal
+(if (is-in-terminal)
+    (use-package evil-terminal-cursor-changer
+      :init(evil-terminal-cursor-changer-activate))) ; or (etcc-on)
+
 (use-package general
   :config
   (general-evil-setup)
@@ -161,10 +166,6 @@
 (global-visual-line-mode t)
 
 (if (is-in-terminal)
-    (use-package evil-terminal-cursor-changer
-      :init(evil-terminal-cursor-changer-activate))) ; or (etcc-on)
-
-(if (is-in-terminal)
     (xterm-mouse-mode 1))
 
 (if (is-in-terminal)
@@ -236,6 +237,10 @@
       kept-new-versions 20   ; how many of the newest versions to keep
       kept-old-versions 5    ; and how many of the old
       )
+
+(use-package powerline 
+  :elpaca (:host github :repo "milkypostman/powerline")
+  :init (powerline-default-theme))
 
 (use-package dracula-theme
   :ensure t

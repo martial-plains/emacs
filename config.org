@@ -22,6 +22,7 @@
 - [[#workbench][Workbench]]
   - [[#syntax-checking][Syntax Checking]]
   - [[#local-history][Local History]]
+  - [[#powerline][Powerline]]
   - [[#themes][Themes]]
 - [[#features][Features]]
   - [[#terminal][Terminal]]
@@ -361,6 +362,13 @@ Controls whether local file history is enabled. When enabled, the file contents 
         kept-new-versions 20   ; how many of the newest versions to keep
         kept-old-versions 5    ; and how many of the old
         )
+#+end_src
+
+** Powerline
+#+begin_src emacs-lisp
+  (use-package powerline 
+    :elpaca (:host github :repo "milkypostman/powerline")
+    :init (powerline-default-theme))
 #+end_src
 
 ** Themes
