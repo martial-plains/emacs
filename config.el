@@ -2,6 +2,7 @@
 
 (require 'elpaca-setup)  ;; The Elpaca Package Manager
 (require 'buffer-move)   ;; Buffer-move for better window management
+(require 'utils)
 
 (use-package evil
   :init         ;; tweak evil's configuration before loading it
@@ -112,6 +113,7 @@
   :custom
   (dashboard-modify-heading-icons '((recents . "file-text")
                                     (bookmarks . "book")))
+  :if (< (length command-line-args) 2)
   :config
   (dashboard-setup-startup-hook))
 
@@ -148,7 +150,7 @@
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 
-(if (eq system-type 'darwin) ;; enables menubar for macOS
+(if (and (eq system-type 'darwin) (not (is-in-terminal))) ;; enables menubar for macOS
     (menu-bar-mode t)
   (menu-bar-mode -1)
   )
@@ -157,6 +159,17 @@
 
 (global-display-line-numbers-mode 1)
 (global-visual-line-mode t)
+
+(if (is-in-terminal)
+    (use-package evil-terminal-cursor-changer
+      :init(evil-terminal-cursor-changer-activate))) ; or (etcc-on)
+
+(if (is-in-terminal)
+    (xterm-mouse-mode 1))
+
+(if (is-in-terminal)
+    (use-package xclip
+      :init (xclip-mode 1)))
 
 (set-frame-parameter nil 'alpha-background 70)
 (add-to-list 'default-frame-alist '(alpha-background . 70))

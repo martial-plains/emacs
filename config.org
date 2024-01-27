@@ -15,6 +15,8 @@
   - [[#font][Font]]
   - [[#menubar-toolbars-and-scrollbars][Menubar, Toolbars and Scrollbars]]
   - [[#display-line-numbers-and-truncated-lines][Display Line Numbers and Truncated Lines]]
+  - [[#mouse-support-for-terminal][Mouse Support for Terminal]]
+  - [[#clipboard-support-for-terminal][Clipboard Support for Terminal]]
   - [[#transparency][Transparency]]
   - [[#code-completion][Code Completion]]
 - [[#workbench][Workbench]]
@@ -49,6 +51,7 @@
 #+begin_src emacs-lisp
   (require 'elpaca-setup)  ;; The Elpaca Package Manager
   (require 'buffer-move)   ;; Buffer-move for better window management
+  (require 'utils)
 #+end_src
 
 ** Load Evil Mode
@@ -75,6 +78,11 @@
 
   ;; Don't install anything. Defer execution of BODY
   (elpaca nil (message "deferred"))
+
+  ;; Displayes cursor correctly in the terminal
+  (if (is-in-terminal)
+      (use-package evil-terminal-cursor-changer
+        :init(evil-terminal-cursor-changer-activate))) ; or (etcc-on)
 #+end_src
 
 ** General Keybindings
@@ -183,6 +191,7 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
     :custom
     (dashboard-modify-heading-icons '((recents . "file-text")
                                       (bookmarks . "book")))
+    :if (< (length command-line-args) 2)
     :config
     (dashboard-setup-startup-hook))
 #+end_src
@@ -233,7 +242,7 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
 
 ** Menubar, Toolbars and Scrollbars
 #+begin_src emacs-lisp
-  (if (eq system-type 'darwin) ;; enables menubar for macOS
+  (if (and (eq system-type 'darwin) (not (is-in-terminal))) ;; enables menubar for macOS
       (menu-bar-mode t)
     (menu-bar-mode -1)
     )
@@ -245,6 +254,19 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
 #+begin_src emacs-lisp
   (global-display-line-numbers-mode 1)
   (global-visual-line-mode t)
+#+end_src
+
+** Mouse Support for Terminal
+#+begin_src emacs-lisp
+  (if (is-in-terminal)
+      (xterm-mouse-mode 1))
+#+end_src
+
+** Clipboard Support for Terminal
+#+begin_src emacs-lisp
+  (if (is-in-terminal)
+      (use-package xclip
+        :init (xclip-mode 1)))
 #+end_src
 
 ** Transparency
