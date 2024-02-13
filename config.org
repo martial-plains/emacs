@@ -1,47 +1,24 @@
+#+title: Emacs Configuration
+#+subtitle: The Methods, Management, and Menagerie@@latex:\\@@ of Madness@@latex: --- in meticulous detail@@
 #+author: Allister Isaiah Harvey
+#+email: a.i.harvey@icloud.com
+#+date: @@html:<!--@@{{{git-rev}}}@@html:-->@@@@latex:\\\Large\bfseries@@ {{{modification-time(%Y-%m-%d, t)}}} @@latex:\\\normalsize\mdseries@@{{{modification-time(%H:%M, t)}}} @@latex:\acr{\lowercase{@@{{{timezone}}}@@latex:}}\iffalse@@, {{{git-rev}}}@@latex:\fi@@
+#+macro: timezone (eval (substring (shell-command-to-string "date +%Z") 0 -1))
+#+html_head: <link rel='shortcut icon' type='image/png' href='https://www.gnu.org/software/emacs/favicon.png'>
 #+description: AIH's personal Emacs config
+#+property: header-args:emacs-lisp :tangle "config.el"
+#+property: header-args:elisp :results replace :exports code
+#+property: header-args:shell :tangle "setup.sh"
+#+property: header-args :tangle no :results silent :eval no-export
+#+embed: LICENCE :description MIT licence file
+#+options: coverpage:yes
 #+startup: showeverything
-#+options: toc:3
 
-* Table Of Contents :toc:
-- [[#important-programs-to-load-first][Important Programs To Load First]]
-  - [[#adding-the-scripts-directory-to-path][Adding the scripts directory to path]]
-  - [[#sourcing-the-scripts][Sourcing the scripts]]
-  - [[#load-evil-mode][Load Evil Mode]]
-  - [[#general-keybindings][General Keybindings]]
-- [[#reload-emacs][Reload Emacs]]
-- [[#text-editor][Text Editor]]
-  - [[#dashboard][Dashboard]]
-  - [[#font][Font]]
-  - [[#menubar-toolbars-and-scrollbars][Menubar, Toolbars and Scrollbars]]
-  - [[#display-line-numbers-and-truncated-lines][Display Line Numbers and Truncated Lines]]
-  - [[#mouse-support-for-terminal][Mouse Support for Terminal]]
-  - [[#clipboard-support-for-terminal][Clipboard Support for Terminal]]
-  - [[#transparency][Transparency]]
-  - [[#code-completion][Code Completion]]
-- [[#workbench][Workbench]]
-  - [[#syntax-checking][Syntax Checking]]
-  - [[#local-history][Local History]]
-  - [[#powerline][Powerline]]
-  - [[#themes][Themes]]
-- [[#features][Features]]
-  - [[#terminal][Terminal]]
-  - [[#org-mode][Org Mode]]
-- [[#language-server-protocal][Language Server Protocal]]
-- [[#languages][Languages]]
-  - [[#python][Python]]
-  - [[#rust][Rust]]
-  - [[#swift][Swift]]
-- [[#packages][Packages]]
-  - [[#which-key][WHICH-KEY]]
-  - [[#rainbow-mode][Rainbow Mode]]
-  - [[#rainbow-delimiters][Rainbow Delimiters]]
-  - [[#projectile][Projectile]]
-  - [[#perspective][Perspective]]
-  - [[#org-auto-tangle][org-auto-tangle]]
+#+latex_class: book
+#+latex_header_extra: \usepackage[autooneside=false,automark,headsepline]{scrlayer-scrpage}
+#+latex_header_extra: \clearpairofpagestyles \renewcommand*{\chaptermarkformat}{} \renewcommand*{\sectionmarkformat}{}
+#+latex_header_extra: \ihead{\upshape\scshape\leftmark} \chead{\Ifstr{\leftmark}{\rightmark}{}{\rightmark}} \ohead[\pagemark]{\pagemark}
 
-* Important Programs To Load First
-** Adding the scripts directory to path
 
 #+begin_src emacs-lisp
   (add-to-list 'load-path "~/.config/emacs/scripts/")
@@ -55,7 +32,329 @@
   (require 'utils)
 #+end_src
 
-** Load Evil Mode
+#+begin_quote
+In the beginning was the Word, and the Word was with Emacs. 📝
+#+end_quote
+
+* Introduction
+
+Welcome, intrepid traveler, to the Enchanted Realm of Emacs!
+Picture this: You step through a pixelated portal, and suddenly, you’re surrounded by glowing parentheses. The air smells of freshly brewed coffee and uncompiled code. A friendly cursor winks at you, whispering, “Emacs awaits, my friend.”
+
+1. *The Keybinding Cauldron* Imagine a bubbling cauldron, steam rising. In it, we toss magical ingredients: ~C-x~, ~M-x~, and a dash of ~C-c C-f~. Stir clockwise (never counter-clockwise—it confuses the bits). Voilà! A keybinding spell! Now, when you chant “Abracadabra,” your buffer dances a jig.
+
+2. *The Package Grimoire* Hidden in a dusty tome lies the *Book of Packages*. Each page reveals a new power. *Magit*, the Git sorcery. *Projectile*, the teleportation amulet. And beware the cursed *Evil Mode*, which whispers, “Join the dark side—Vim awaits.” Choose wisely, young wizard.
+
+3. *Custom Functions: The Alchemist’s Brew* In a moonlit alcove, you mix Lisp ingredients. Eye of Newt (or maybe just ~defun~). Stir with a wand (or a keyboard). Chant: “Sim-sala-bim!” Behold, your custom function springs forth! Need to align code? ~M-x align-regexp~. Want CamelCase? ~M-x my-camelize-word~. And for debugging despair, ~M-x butterfly~.
+
+4. *Parentheses: The Dance of Balance* In the Great Hall, parentheses waltz. Left meets right, twirling gracefully. But beware the rogue parenthesis—the *Parenthetical Poltergeist*. Bind ~C-M-f~ and ~C-M-b~ to exorcise it. Victory! And remember, every closing paren is a step toward enlightenment.
+
+5. *Buffers: The Symphony of States* Ah, the orchestra of buffers! The scratch buffer hums potential. The /magical-org-mode/ buffer whispers productivity secrets. And the /distracted.org/ buffer? It’s where memes and cat gifs collide. Keep them harmonious, lest they stage a rebellion.
+
+6. *The Cursor’s Quest* Our cursor, a pixelated knight, seeks the Holy Point. It gallops through lines, leaps over whitespace chasms, and battles typos (fierce beasts, those). May it never fall into the abyss of infinite loops. And when weary, ~C-x C-s~ — the Save Potion—shall preserve our progress.
+
+So, fellow adventurer, let’s code like wizards! May your buffers overflow with wisdom, your parentheses nest snugly, and your ~.emacs~ file be the stuff of legends. Remember: Emacs giveth, and Emacs taketh away—but mostly giveth. 🌠
+
+May the cursor be ever in your favor! 🚀
+
+
+** Why Emacs?
+
+Let’s dive into the mystical world of Emacs, where keybindings are like secret 
+handshakes, and customization options are as abundant as a buffet at a code 
+wizard’s feast. Behold, the whimsical reasons to choose Emacs over its rivals:
+
++ Emacs: The Labyrinth of Code 🌟
+  - Imagine coding in a digital labyrinth, where every keystroke opens a new twisty passage. Emacs is like that cryptic maze from an old-school text adventure game. You’ll find yourself muttering, “I swear, the function definition was just around this corner… or was it?”
+  - VS Code? Pfft! It’s like a well-lit shopping mall. Boring! Real programmers prefer the thrill of getting lost in Emacs. It’s the ultimate escape room for your brain.
+
++ Vim: The Arrow-Controlled Universe ⬆️⬇️⬅️➡️
+  - Vim users claim their arrow keys are for amateurs. Instead, they navigate the cosmos using H, J, K, and L. It’s like piloting a spaceship with a Dvorak keyboard layout. 🚀
+  - But Emacs? Oh, it’s got a whole constellation of shortcuts. Meta-key chords, Ctrl+Alt+Shift+CosmicWarp—you name it! Emacs users transcend mere navigation; they transcend reality itself. 🌌
+
++ Emacs: The Swiss Army Chainsaw 🔪🔧
+  - VS Code offers extensions. Emacs scoffs. Extensions? Child’s play! Emacs has *modes*. Each mode transforms your editor into a different tool. Coding? There’s a mode for that. Writing poetry? Yep, another mode. Summoning Cthulhu? You betcha!
+  - Vim? It’s like a pocket knife—useful but limited. Emacs? It’s a Swiss Army Chainsaw. Need to debug? Activate “Debugger Mode.” Feeling poetic? Switch to “Haiku Mode.” Want to summon Cthulhu? Well, that’s “Eldritch Mode.” 🐙
+
++ Emacs: The Energy-Saving Editor ⚡
+  - Vim users claim their editor is fast. But Emacs? It’s energy-efficient. Why? Because once you’ve memorized those 1,000 keybindings, your fingers move at light speed. No wasted energy on mouse clicks or fancy animations.
+  - VS Code? It’s like a caffeinated squirrel—jittery and resource-hungry. Emacs users sip chamomile tea, type in the dark, and ascend to a higher plane of productivity. ☕
+
++ Emacs: The Eternal Flame 🔥
+  - VS Code updates? Vim plugins? Pfft! Emacs laughs at version numbers. It’s been around since the dawn of time. When the universe collapses, Emacs will still be there, humming “Fly Me to the Moon” in Lisp.
+  - Vim? It’s a phoenix, reborn from the ashes of Vi. Emacs? It’s the cosmic campfire where programmers gather to share tales of regex conquests and parentheses balancing. 🔥
+
+*** Features & quirks
+
+Let’s delve deeper into the quirky and enigmatic world of Emacs. Buckle up, fellow adventurer, as we explore the delightful oddities and occasional pitfalls of this ancient text editor:
+
++ The Init File: Where Magic Happens 🪄
+  - Emacs has an *init file* (usually named ~.emacs~ or ~init.el~). It’s like the secret spellbook where you conjure your editor’s powers. But beware! One misplaced parenthesis, and your Emacs will summon a daemon to haunt your cursor.
+  - Quirk: Emacs users spend more time tweaking their init files than writing actual code. Priorities, right?
+
++ Modes, Modes Everywhere 🌌
+  - Emacs boasts a gazillion modes. Major modes, minor modes, obscure modes, and modes that defy the laws of physics. Each mode transforms Emacs into a different beast.
+  - Quirk: Ever accidentally activate “Org Mode” while writing an email? Suddenly, your email has checkboxes, deadlines, and a table of contents. Oops!
+
++ Plugins and Package Management 🌟
+  - Emacs boasts a galaxy of *plugins* —user-contributed extensions that transform it into a Swiss Army Chainsaw. These plugins add customizations, optimizations, and even summon Cthulhu (okay, maybe not that last part).
+  - The *package command* lets you browse, install, and update plugins from within Emacs itself. It’s like shopping for magical artifacts in a wizard’s bazaar.
+
++ Content-Aware Editing Modes 🎨
+  - Emacs dons different hats (or modes) for various file types. Syntax coloring, indentation, and code completion are its secret weapons. It’s like having a chameleon editor that adapts to your every incantation.
+  - Quirk: Emacs users switch modes faster than a shape-shifting dragon at a masquerade ball.
+
++ Complete Built-In Documentation 📚
+  - Emacs whispers ancient secrets in its *tutorial for new users*. It’s like a cryptic scroll unrolling before your eyes. Need help? Just invoke ~C-h t~ and behold the wisdom.
+  - Quirk: Emacs users become scholars of the .info files, deciphering them like Rosetta Stones.
+
++ Full Unicode Support 🌐
+  - Emacs embraces all human scripts. Whether you’re writing Python, Ruby, or summoning eldritch beings in Klingon, Emacs nods sagely. It’s the Tower of Babel for coders.
+  - Quirk: Emacs users type emoji spells and hex codes for fun. 🧙‍♂️✨
+
++ The Holy Trinity: Ctrl, Alt, Meta 🌟
+  - Emacs keybindings involve Ctrl, Alt, and the elusive Meta key (often mapped to Alt or Command). It’s like playing a piano concerto with your forehead.
+  - Quirk: Emacs users develop finger dexterity rivaling concert pianists. They can compose symphonies in Lisp while sipping herbal tea.
+
++ The Art of Buffer and Window Management 🪟 📜
+  - Emacs opens portals (windows) into parallel universes (buffers). You can edit code in one window, write poetry in another, and debug quantum entanglement in a third.
+  - Emacs buffers are like parallel universes. You open one, dive into another, and forget where you left your coffee. “Was I editing ~main.py~ or ~mystical-unicorn.org~?”
+  - Quirk: Emacs users juggle buffers like circus clowns. They switch between ~=*scratch*=~, ~=*Messages*=~, and ~=*MyGreatNovel*=~ with the grace of tightrope walkers.
+  - Quirk: Emacs users multitask like cosmic jugglers. “Ah, yes, the ~=*scratch*=~ buffer—I was debugging black holes there.”
+
++ String Case Conversion 🔡
+  - Emacs transforms text like an alchemist transmuting lead into gold. Convert strings to lowercase, uppercase, or even camelCase. It’s like a magical text blender.
+  - Quirk: Emacs users whisper, “Abracadabra, ~M-x downcase-region~!” and watch their text metamorphose.
+
++ The Eternal Learning Curve 📚
+  - Emacs is like Hogwarts: You’re forever a student. There’s always a new spell to learn, a package to install, or a cryptic command to decipher.
+  - Quirk: Emacs users age backward. They start as grizzled wizards and end up as wide-eyed apprentices.
+
++ The “I’ll Just Quit and Restart” Solution 🔄
+  - When Emacs misbehaves, the solution is simple: *restart Emacs*. It’s like rebooting the Matrix. “Agent Smith, meet ~M-x restart-emacs~.”
+
++ The Zen of Emacs 🧘‍♂️
+  - Despite its quirks, Emacs is a serene temple of productivity. It whispers, “You are one with the buffer. Breathe in, ~C-x C-s~. Breathe out, ~M-x save-buffers-kill-emacs~.”
+  - Quirk: Emacs users achieve enlightenment by meditating on the void (also known as the empty buffer).
+
+** Notes for the unwary adventurer
+
+Ah, fellow seeker of arcane knowledge! You’ve embarked upon a perilous journey—a quest to tame the wild beast known as Emacs. Fear not, for I shall illuminate the treacherous path ahead. Gather your courage, adjust your monocle, and let us delve into the abyss of Emacs.
+
+*** Extra requirements
+
+I use the legendary [[https://github.com/microsoft/cascadia-code][Cascadia Code]] font. It whispers secrets to your code, caressing each character with love. Install it, lest your buffers weep in monospaced agony. Remember, a true adventurer never settles for Comic Sans.
+
+* Initial setup
+
+** Personal information
+
+#+begin_src emacs-lisp
+(setq user-full-name "AIH"
+      user-mail-address "a.i.harvey@icloud.com")
+#+end_src
+
+** Better defaults
+
+*** Simple settings
+
+#+begin_src emacs-lisp
+(setq-default
+ delete-by-moving-to-trash t                      ; Delete files to trash
+ window-combination-resize t                      ; take new window space from all other windows (not just current)
+ x-stretch-cursor t)                              ; Stretch cursor to the glyph width
+
+(display-time-mode 1)                             ; Enable time in the mode-line
+(global-subword-mode 1)                           ; Iterate through CamelCase words
+#+end_src
+
+
+When using a device with a battery, let's add a dash of magic!
+We'll check for a battery during tangle via noweb, and only call
+~display-battery-mode~ when the mystical battery sprites are present.
+
+#+name: battery-status-setup
+#+begin_src emacs-lisp :noweb-ref none
+(require 'battery)
+(if (and battery-status-function
+         (not (equal (alist-get ?L (funcall battery-status-function))
+                     "N/A")))
+    (prin1-to-string `(display-battery-mode 1))
+  "")
+#+end_src
+
+Add a dash of magic for battery status
+Only call display-battery-mode when the mystical battery sprites are present
+
+#+begin_src emacs-lisp :noweb no-export 
+<<battery-status-setup()>>
+#+end_src
+
+🌟 Unleash the Cosmic Menubar for macOS! 🌌
+If you're traversing the celestial realms on a Mac,
+and you're not lost in the terminal abyss, behold!
+We shall reveal the mystical menubar, adorned with
+dropdown constellations of commands and secrets.
+
+#+begin_src emacs-lisp
+
+(if (and (eq system-type 'darwin) (not (is-in-terminal)))
+    (menu-bar-mode t)  ; Activate the menubar spell
+  (menu-bar-mode -1)) ; Conceal it from mere mortals
+#+end_src
+
+🌠 Disarm the Cluttered Toolbar! 🛡️
+The toolbar, like a rusty sword, clutters your path.
+Fear not! We shall banish it to the void, leaving
+behind a clean canvas for your cosmic creations.
+
+#+begin_src emacs-lisp
+(tool-bar-mode -1) ; Vanquish the toolbar dragons
+#+end_src
+
+
+🌊 Silence the Scrollbar Sirens! 🧜‍♀️
+The scrollbar sings a hypnotic song, luring you away
+from your code. But we, brave sorcerers, shall silence
+its enchanting whispers, allowing focus and clarity.
+#+begin_src emacs-lisp
+(scroll-bar-mode -1) ; Hush, sweet scrollbar nymphs!
+#+end_src
+
+*** Terminal
+
+🌠 Mouse Support for Terminal Wizards 🐭
+When you tread the mystical path of the terminal,
+fear not the elusive mouse! We shall awaken its dormant
+powers with the incantation of xterm-mouse-mode.
+
+#+begin_src emacs-lisp
+  (if (is-in-terminal)
+      (xterm-mouse-mode 1))
+#+end_src
+
+🌊 Clipboard Support for Terminal Alchemists 📋
+The clipboard, a vessel of forgotten secrets, yearns
+for purpose. Fear not! We invoke the xclip package,
+binding it to our will and granting it passage to the
+realms of copy and paste.
+
+#+begin_src emacs-lisp
+  (if (is-in-terminal)
+      (use-package xclip
+        :init (xclip-mode 1)))
+#+end_src
+
+*** Windows
+
+Ask the winds which buffer to reveal after splitting the window.
+
+#+begin_src emacs-lisp
+(setq evil-vsplit-window-right t
+      evil-split-window-below t)
+#+end_src
+
+🌟 Summon the spirits of buffers 🌟
+
+#+begin_src emacs-lisp
+  (defun prompt-for-buffer--prompt-for-buffer-around (&rest _)
+    (with-eval-after-load '(evil-window-split evil-window-vsplit)
+      (consult-buffer)))
+
+  (advice-add 'prompt-for-buffer :after #'prompt-for-buffer-prompt-for-buffer-around)
+#+end_src
+
+🌟 Window Rotation and Layout Dance 🌟
+Invoke the celestial dance of window rotation under SPC w r and SPC w R.
+Inspired by Tmux's cosmic use of C-b SPC to rotate windows.
+And behold, the missing arrow-key variants of window navigation shall appear!
+
+#+begin_src emacs-lisp
+  (with-eval-after-load 'general
+    (with-eval-after-load 'evil
+      ;; setup up 'SPC' as the global leader key
+      (general-create-definer aih/leader-keys
+        :states '(normal insert virtual emacs)
+        :keymaps 'override
+        :prefix "SPC" ;; set leader
+        :global-prefix "M-SPC") ;; access leader in insert mode
+
+      (aih/leader-keys
+        "w" '(:ignore t :wk "Windows")
+        "w q" '(evil-window-delete :wk "Close window")
+        "w n" '(evil-window-new :wk "New window")
+        ;; Resizing
+        "w +" '(enlarge-window :wk "Increase window height")
+        "w -" '(shrink-window :wk "Increase window height")
+        ;; Navigation
+        "w h" '(evil-window-left :wk "Window left")
+        "w j" '(evil-window-down :wk "Window down")
+        "w k" '(evil-window-up :wk "Window up")
+        "w l" '(evil-window-right :wk "Window right")
+        "w w" '(evil-window-next :wk "Goto next window")
+        ;; Splitting Windows
+        "w s" '(evil-window-split :wk "Horizontal split window")
+        "w v" '(evil-window-vsplit :wk "Vertical split window")
+        ;; Swapping Windows
+        "w H" '(buf-move-left :wk "Buffer move left")
+        "w J" '(buf-move-down :wk "Buffer move down")
+        "w K" '(buf-move-up :wk "Buffer move up")
+        "w L" '(buf-move-right :wk "Buffer move right"))))
+#+end_src
+
+** Emacs configuration
+
+*** Display Line Numbers and Truncated Lines
+
+Because counting lines is like playing hide-and-seek with code.
+And we all know that line numbers are the breadcrumbs of the programmer's forest.
+
+#+begin_src emacs-lisp
+  (global-display-line-numbers-mode 1)
+  (global-visual-line-mode t)
+#+end_src
+
+
+*** Transparency
+
+Because sometimes Emacs needs to channel its inner ghost.
+Toggle transparency with =SPC c t= (because why not?).
+
+#+begin_src emacs-lisp
+  (set-frame-parameter nil 'alpha-background 100)
+  (add-to-list 'default-frame-alist '(alpha-background . 100))
+
+  (defun set-transparency (alpha)
+    "Set the transparency of the current frame."
+    (interactive "nEnter transparency percentage (0-100): ")
+    (let* ((active-alpha (or (cdr (assq 'alpha (frame-parameters))) 100))
+           (new-alpha (cons alpha alpha)))
+      (set-frame-parameter nil 'alpha new-alpha)
+      (message "Transparency set to %d%%" alpha)))
+
+  (with-eval-after-load 'general
+    (general-evil-setup)
+    (general-nmap
+      :prefix "SPC"
+      :wk "Toggle Transparency"
+      "c t" 'set-transparency))
+#+end_src
+
+*** Zooming In/Out
+
+Because sometimes code needs a closer look, like a detective examining clues.
+Use CTRL + =/- for zooming in/out. Or, if you're feeling fancy, CTRL + the mouse wheel.
+
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-=") 'text-scale-increase)
+  (global-set-key (kbd "C--") 'text-scale-decrease)
+  (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
+  (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
+#+end_src
+
+*** Evil mode
+
+Load Evil Mode (because even code needs a little mischief)
 
 #+begin_src emacs-lisp
   (use-package evil
@@ -65,244 +364,75 @@
     (setq evil-vsplit-window-right t)
     (setq evil-split-window-below t)
     (evil-mode))
+#+end_src
+
+Load Evil Collection (because why settle for just one kind of evil?)
+
+#+begin_src emacs-lisp
   (use-package evil-collection
     :after evil
     :config
     (setq evil-collection-mode-list '(dashboard dired ibuffer))
     (evil-collection-init))
-  (use-package evil-tutor)
+#+end_src
 
+Learn Evil with the Evil Tutor (because every villain needs a mentor)
+
+#+begin_src emacs-lisp
+  (use-package evil-tutor)
+#+end_src
+
+#+begin_src emacs-lisp
   ;;Turns off elpaca-use-package-mode current declaration
   ;;Note this will cause the declaration to be interpreted immediately (not deferred).
   ;;Useful for configuring built-in emacs features.
-  (use-package emacs :elpaca nil :config (setq ring-bell-function #'ignore))
+  (use-package emacs :ensure nil :config (setq ring-bell-function #'ignore))
 
   ;; Don't install anything. Defer execution of BODY
   (elpaca nil (message "deferred"))
 
-  ;; Displayes cursor correctly in the terminal
+  ;; Display the cursor correctly in the terminal (because even cursors deserve respect)
   (if (is-in-terminal)
       (use-package evil-terminal-cursor-changer
         :init(evil-terminal-cursor-changer-activate))) ; or (etcc-on)
 #+end_src
 
-** General Keybindings
+*** Language Server Protocal
+
+Welcome to the mystical realm of LSP (Language Server Protocol)! 🌟✨🔮
+
+Behold, brave coder, as we summon the spirits of code completion,
+hover tooltips, and go-to-definition. Fear not, for our incantations
+are well-commented and our parentheses balanced.
+
+🧙‍♂️🔍📜
 
 #+begin_src emacs-lisp
-  (use-package general
-    :config
-    (general-evil-setup)
-
-    ;; setup up 'SPC' as the global leader key
-    (general-create-definer aih/leader-keys
-      :states '(normal insert virtual emacs)
-      :keymaps 'override
-      :prefix "SPC" ;; set leader
-      :global-prefix "M-SPC") ;; access leader in insert mode
-
-    (aih/leader-keys
-      "." '(find-file :wk "Find file")
-      "f c" '((lambda () (interactive) (find-file (concat user-emacs-directory "config.org"))) :wk "Edit emacs config")
-      "TAB TAB" '(comment-line :wk "Comment lines"))
-
-    (aih/leader-keys
-      "b" '(:ignore t :wk "buffer")
-      "bb" '(switch-to-buffer :wk "Switch buffer")
-      "bk" '(kill-this-buffer :wk "Kill this buffer")
-      "bn" '(next-buffer :wk "Next buffer")
-      "bp" '(previous-buffer :wk "Previous buffer")
-      "br" '(revert-buffer :wk "Revert buffer"))
-
-    (aih/leader-keys
-      "e" '(:ignore t :wk "Evaluate")
-      "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
-      "e d" '(eval-defun :wk "Evaluate defun containing or after point")
-      "e e" '(eval-expression :wk "Evaluate and elisp expression")
-      "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
-      "e r" '(eval-region :wk "Evaluate elisp in region"))
-
-    (aih/leader-keys
-      "h" '(:ignore t :wk "Help")
-      "h f" '(describe-function :wk "Describe function")
-      "h v" '(describe-variable :wk "Describe variable")
-      ;;"h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :wk "Reload emacs config"))
-      "h r r" '(reload-init-file :wk "Reload emacs config"))
-
-    (aih/leader-keys
-      "t" '(:ignore t :wk "Toggle")
-      "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
-      "t t" '(visual-line-mode :wk "Toggle truncated lines"))
-
-    (aih/leader-keys
-      "w" '(:ignore t :wk "Windows")
-      ;; Window splits
-      "w c" '(evil-window-delete :wk "Close window")
-      "w n" '(evil-window-new :wk "New window")
-      "w s" '(evil-window-split :wk "Horizontal split window")
-      "w v" '(evil-window-vsplit :wk "Vertical split window")
-      ;; Window motions
-      "w h" '(evil-window-left :wk "Window left")
-      "w j" '(evil-window-down :wk "Window down")
-      "w k" '(evil-window-up :wk "Window up")
-      "w l" '(evil-window-right :wk "Window right")
-      "w w" '(evil-window-next :wk "Goto next window")
-      ;; Move Windows
-      "w H" '(buf-move-left :wk "Buffer move left")
-      "w J" '(buf-move-down :wk "Buffer move down")
-      "w K" '(buf-move-up :wk "Buffer move up")
-      "w L" '(buf-move-right :wk "Buffer move right"))
-    )
-
-#+end_src
-
-* Reload Emacs
-This is just an example of how to create a simple function in Emacs.  Use this function to reload Emacs after adding changes to the config.  Yes, I am loading the user-init-file twice in this function, which is a hack because for some reason, just loading the user-init-file once does not work properly.
-
-#+begin_src emacs-lisp
-  (defun reload-init-file ()
-    (interactive)
-    (load-file user-init-file)
-    (load-file user-init-file))
-#+end_src
-
-
-
-* Text Editor
-Let's make GNU Emacs look a little better.
-
-** Dashboard
-Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items and an Emacs banner.
-
-#+begin_src emacs-lisp
-  (use-package dashboard
-    :ensure t
+  (use-package lsp-mode
     :init
-    (setq initial-buffer-choice 'dashboard-open)
-    (setq dashboard-set-heading-icons t)
-    (setq dashboard-set-file-icons t)
-    (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
-    ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
-    (setq dashboard-startup-banner 'official)  ;; use official Emacs logo as banner
-    (setq dashboard-center-content nil) ;; set to 't' for centered content
-    (setq dashboard-items '((recents . 5)
-                            (agenda . 5 )
-                            (bookmarks . 3)
-                            (projects . 3)
-                            (registers . 3)))
-    :custom
-    (dashboard-modify-heading-icons '((recents . "file-text")
-                                      (bookmarks . "book")))
-    :if (< (length command-line-args) 2)
-    :config
-    (dashboard-setup-startup-hook))
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    (setq lsp-keymap-prefix "C-c l")
+    :hook (;; If you want which-key integration, gaze into the abyss:
+           (lsp-mode . lsp-enable-which-key-integration))
+    :commands lsp)
+
+  ;; optionally;; Optionally, you can don your Helm of LSP or wield the Ivy Blade:
+  (use-package lsp-ui :commands lsp-ui-mode)
+  ;; if you are helm user
+  ;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
+  ;; if you are ivy user
+  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+  ;; And if you seek enlightenment through debugging, behold the Dap:
+  (use-package dap-mode)
+  (use-package dap-cpptools :ensure (:host github :repo "emacs-lsp/dap-mode"))
+  ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 #+end_src
 
-** Font
-Defining the various fonts that Emacs will use.
+Remember, young sorcerer, with great power comes great responsibility.
+May your code be bug-free and your tea always warm. 🫖🐛
 
-#+begin_src emacs-lisp
-  (set-face-attribute 'default nil
-                      :font "Cascadia Code"
-                      :height 110
-                      :weight 'medium)
-  (set-face-attribute 'variable-pitch nil
-                      :font "Courier New"
-                      :height 120
-                      :weight 'medium)
-  (set-face-attribute 'fixed-pitch nil
-                      :font "Cascadia Code"
-                      :height 110
-                      :weight 'medium)
-  ;; Makes commented text and keywords italics.
-  ;; This is working in emacsclient but not emacs.
-  ;; Your font must have an italic face available.
-  (set-face-attribute 'font-lock-comment-face nil
-                      :slant 'italic)
-  (set-face-attribute 'font-lock-keyword-face nil
-                      :slant 'italic)
-
-  ;; This sets the default font on all graphical frames created after restarting Emacs.
-  ;; Does the same thing as 'set-face-attribute default' above, but emacsclient fonts
-  ;; are not right unless I also add this method of setting the default font.
-  (add-to-list 'default-frame-alist '(font . "Cascadia Code"))
-
-  ;; Uncomment the following line if line spacing needs adjusting.
-  (setq-default line-spacing 0.12)
-
-#+end_src
-
-*** Zooming In/Out
-You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTRL plus the mouse wheel for zooming in/out.
-
-#+begin_src emacs-lisp
-  (global-set-key (kbd "C-=") 'text-scale-increase)
-  (global-set-key (kbd "C--") 'text-scale-decrease)
-  (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
-  (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
-#+end_src
-
-** Menubar, Toolbars and Scrollbars
-#+begin_src emacs-lisp
-  (if (and (eq system-type 'darwin) (not (is-in-terminal))) ;; enables menubar for macOS
-      (menu-bar-mode t)
-    (menu-bar-mode -1)
-    )
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-#+end_src
-
-** Display Line Numbers and Truncated Lines
-#+begin_src emacs-lisp
-  (global-display-line-numbers-mode 1)
-  (global-visual-line-mode t)
-#+end_src
-
-** Mouse Support for Terminal
-#+begin_src emacs-lisp
-  (if (is-in-terminal)
-      (xterm-mouse-mode 1))
-#+end_src
-
-** Clipboard Support for Terminal
-#+begin_src emacs-lisp
-  (if (is-in-terminal)
-      (use-package xclip
-        :init (xclip-mode 1)))
-#+end_src
-
-** Transparency
-
-#+begin_src emacs-lisp
-  (set-frame-parameter nil 'alpha-background 70)
-  (add-to-list 'default-frame-alist '(alpha-background . 70))
-
-  ;;(set-frame-parameter (selected-frame) 'alpha '(<active> . <inactive>))
-  ;;(set-frame-parameter (selected-frame) 'alpha <both>)
-  (set-frame-parameter (selected-frame) 'alpha '(85 . 50))
-  (add-to-list 'default-frame-alist '(alpha . (85 . 50)))
-#+end_src
-
-Toggle transparency with ~C-c t~
-
-#+begin_src emacs-lisp
-  (defun toggle-transparency ()
-    (interactive)
-    (let ((alpha (frame-parameter nil 'alpha)))
-      (set-frame-parameter
-       nil 'alpha
-       (if (eql (cond ((numberp alpha) alpha)
-                      ((numberp (cdr alpha)) (cdr alpha))
-                      ;; Also handle undocumented (<active> <inactive>) form.
-                      ((numberp (cadr alpha)) (cadr alpha)))
-                100)
-           '(85 . 50) '(100 . 100)))))
-  (global-set-key (kbd "C-c t") 'toggle-transparency)
-#+end_src
-
-** Code Completion
-#+begin_src emacs-lisp
-  (use-package company :ensure t)
-#+end_src
 
 *** Ivy (Counsel)
 + Ivy, a generic completion mechanism for Emacs.
@@ -343,159 +473,956 @@ Toggle transparency with ~C-c t~
                                  'ivy-rich-switch-buffer-transformer))
 #+end_src
 
-* Workbench
-** Syntax Checking
+*** Syntax Checking
 
 #+begin_src emacs-lisp
   (use-package flycheck
     :hook ('after-init-hook #'global-flycheck-mode))
 #+end_src
 
-** Local History
-Controls whether local file history is enabled. When enabled, the file contents of an editor that is saved will be stored to a backup location to be able to restore or review the contents later
+*** Local History
+Ah, the mystical Local History – where code snippets are whispered
+into the ether, stored in secret scrolls, and guarded by digital
+dragons. Because every line of code has a story to tell, and sometimes
+it's an epic saga. 
 
 #+begin_src emacs-lisp
   (setq backup-directory-alist `((".*" . ,temporary-file-directory))
-        backup-by-copying t    ; Don't delink hardlinks
-        version-control t      ; Use version numbers on backups
-        delete-old-versions t  ; Automatically delete excess backups
-        kept-new-versions 20   ; how many of the newest versions to keep
-        kept-old-versions 5    ; and how many of the old
+        backup-by-copying t    ; Don't delink hardlinks (because hardlinks are like codependent
+        version-control t      ; Use version numbers on backups (because even code deserves a sequel
+        delete-old-versions t  ; Automatically delete excess backups (because clutter is the enemy
+        kept-new-versions 20   ; How many of the newest versions to keep (because history is a bestseller
+        kept-old-versions 5    ; And how many of the old (because vintage code is timeless
         )
 #+end_src
 
-** Powerline
+Remember, your code's journey is like a rollercoaster: exhilarating, occasionally terrifying, and always worth the ride. 🎢📜
+
+*** Visual settings
+**** Font face
+***** Setting fonts
+
+Fira Code is like that reliable friend who always remembers your parentheses.
+It's got ligatures that make your code look like a secret cypher. Plus, it's
+free – the best kind of friend, really.
+
+Now, Overpass – it's the sans-serif companion. It's like the cool kid at the
+party who knows how to balance minimalism with personality. But beware: if
+you crank up the font size too much, it starts yelling, "I'm here, deal with it!"
+
+But wait, what's this? JetBrains Mono enters the scene, wearing its
+monospaced cape. It's like the Swiss Army knife of fonts – sharp, versatile,
+and ready for any coding adventure. Some say it even whispers Python
+snippets in your dreams.
+
+And now, Cascadia Code by Microsoft steps up. It's like the font equivalent
+of a Redmond sunset – warm, comforting, and familiar. It's got those
+programmer-friendly ligatures, making your arrow functions look like
+they're winking at you.
+
+But hey, fonts are like relationships – you've got to find the one that
+sparks joy. So, mix and match, adjust the sizes, and let your code dance
+across the screen. Just remember: no matter which font you choose, your bugs
+will still be there, waiting to surprise you like a mischievous cat.
+
 #+begin_src emacs-lisp
-  (use-package powerline 
-    :elpaca (:host github :repo "milkypostman/powerline")
-    :init (powerline-default-theme))
+  (set-face-attribute 'default nil
+                      :font "Cascadia Code"
+                      :height 110
+                      :weight 'medium)
+  (set-face-attribute 'variable-pitch nil
+                      :font "Courier New"
+                      :height 120
+                      :weight 'medium)
+  (set-face-attribute 'fixed-pitch nil
+                      :font "Cascadia Code"
+                      :height 110
+                      :weight 'medium)
+  ;; Makes commented text and keywords italics.
+  ;; This is working in emacsclient but not emacs.
+  ;; Your font must have an italic face available.
+  (set-face-attribute 'font-lock-comment-face nil
+                      :slant 'italic)
+  (set-face-attribute 'font-lock-keyword-face nil
+                      :slant 'italic)
+
+  ;; This sets the default font on all graphical frames created after restarting Emacs.
+  ;; Does the same thing as 'set-face-attribute default' above, but emacsclient fonts
+  ;; are not right unless I also add this method of setting the default font.
+  (add-to-list 'default-frame-alist '(font . "Cascadia Code"))
+
+  ;; Uncomment the following line if line spacing needs adjusting.
+  (setq-default line-spacing 0.12)
 #+end_src
 
-** Themes
-*** Dracula
+***** Emojis
+
+Because life is too short for plain text. Let's add some sparkle!
+
+#+begin_src emacs-lisp
+(defvar +emoji-rx
+  (let (emojis)
+    (map-char-table
+     (lambda (char set)
+       (when (eq set 'emoji)
+         (push (copy-tree char) emojis)))
+     char-script-table)
+    (rx-to-string `(any ,@emojis)))
+  "A regexp to find all emoji-script characters.")
+#+end_src
+
+For the sake of convenient insertion, behold the magical aliases!
+Based on common usage, these emojis shall reveal their true names.
+
+#+begin_src emacs-lisp
+(setq emoji-alternate-names
+      '(("🙂" ":)")
+        ("😄" ":D")
+        ("😉" ";)")
+        ("🙁" ":(")
+        ("😆" "laughing face" "xD")
+        ("🤣" "ROFL face")
+        ("😢" ":'(")
+        ("🥲" ":')")
+        ("😮" ":o")
+        ("😑" ":|")
+        ("😎" "cool face")
+        ("🤪" "goofy face")
+        ("🤥" "pinnochio face" "liar face")
+        ("😠" ">:(")
+        ("😡" "angry+ face")
+        ("🤬" "swearing face")
+        ("🤢" "sick face")
+        ("😈" "smiling imp")
+        ("👿" "frowning imp")
+        ("❤️" "<3")
+        ("🫡" "o7")
+        ("👍" "+1")
+        ("👎" "-1")
+        ("👈" "left")
+        ("👉" "right")
+        ("👆" "up")
+        ("💯" "100")
+        ("💸" "flying money")))
+#+end_src
+
+When soaring through the realms of Emacs 28+, behold the majestic emoji dispatch!
+Press the leader key (because leaders lead, right?) and witness the emoji symphony.
+But wait, there's more! For those who prefer ancient incantations, chant "C-x 8 e"
+to summon emojis from the ether. Fear not, for =SPC e= lies unclaimed, a humble
+banana waiting to ascend to greatness. Perhaps one day, it shall split itself
+into separate insertion and querying commands across the map. Until then,
+let the magic guide your keystrokes! Abracadabra! ✨
+
+#+begin_src emacs-lisp
+  (with-eval-after-load 'general
+    (when (>= emacs-major-version 29)
+      (general-create-definer aih/leader-keys
+	:states '(normal insert virtual emacs)
+	:keymaps 'override
+	:prefix "SPC" ;; set leader
+	:global-prefix "M-SPC") ;; access leader in insert mode
+      (aih/leader-keys
+	"e" '(:ignore t :wk "Emoji")
+	"e s" '(emoji-search :wk "Search")
+	"e r" '(emoji-recent :wk "Recent")
+	"e l" '(emoji-list :wk "List")
+	"e d" '(emoji-describe :wk "Describe")
+	"e i" '(emoji-insert :wk "Insert"))
+      ))
+#+end_src
+
+**** Theme
+
 #+begin_src emacs-lisp
   (use-package dracula-theme
     :ensure t
     :load-path "themes"
-    :init
-    (setq dracula-theme-kit t)
     :config
-    (load-theme 'dracula t)
+    (load-theme 'dracula t))
+#+end_src
+
+**** Line numbers
+
+Because counting lines is like playing hopscotch with code.
+Let's make it relative, like a friendly neighbor waving from the next line.
+
+#+begin_src emacs-lisp
+(setq display-line-numbers-type 'relative)
+#+end_src
+
+**** Dashboard
+
+Because every adventure needs a starting point, and every coder deserves a grand entrance.
+
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :ensure t
+    :init
+    (setq initial-buffer-choice 'dashboard-open)
+    (setq dashboard-set-heading-icons t)
+    (setq dashboard-set-file-icons t)
+    (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
+    ;; Uncomment the next line if you want the standard Emacs logo as your banner:
+    ;; (setq dashboard-startup-banner 'logo)
+    ;; Or embrace the official Emacs logo for maximum enchantment:
+    (setq dashboard-startup-banner 'official)  
+    (setq dashboard-center-content nil) ;; set to 't' for centered content
+
+    ;; Customize your dashboard items – because variety is the spice of startup life:
+    (setq dashboard-items '((recents . 5)
+                            (agenda . 5 )
+                            (bookmarks . 3)
+                            (projects . 3)
+                            (registers . 3)))
+    :custom
+    ;; Modify heading icons for that extra dash of flair:
+    (dashboard-modify-heading-icons '((recents . "file-text")
+                                      (bookmarks . "book")))
+
+    ;; Only invoke the magic if you're not already on a quest (i.e., started with arguments):
+    :if (< (length command-line-args) 2)
+
+    ;; And now, let the curtain rise! 🌟
+    :config
+    (dashboard-setup-startup-hook))
+#+end_src
+
+Remember, every line of code is a portal to new realms. May your
+dashboard guide you to epic quests and bug-free adventures! 🚀🔮
+
+
+
+** Other Things
+*** General Keybindings
+
+Because every keystroke is a dance move in the grand ballroom of code.
+
+#+begin_src emacs-lisp
+  (use-package general
+    :config
+    (general-evil-setup)
+
+    ;; setup up 'SPC' as the global leader key
+    (general-create-definer aih/leader-keys
+      :states '(normal insert virtual emacs)
+      :keymaps 'override
+      :prefix "SPC" ;; set leader
+      :global-prefix "M-SPC") ;; access leader in insert mode
+
+    ;; Navigate the code cosmos with finesse:
+    (aih/leader-keys
+      "." '(find-file :wk "Find file")
+      "f c" '((lambda () (interactive) (find-file (concat user-emacs-directory "config.org"))) :wk "Edit emacs config")
+      "f D" '(find-file :wk "Delete file")
+      "f s" '(save-buffer :wk "Save file"))
+  
+    ;; Exit gracefully (because even code needs an exit strategy):
+    (aih/leader-keys
+      "q q" '(save-buffers-kill-terminal :wk "Quit"))
+  
+    ;; Comment lines like a poet (because code is poetry, right?):
+    (aih/leader-keys
+      "TAB TAB" '(comment-line :wk "Comment lines"))
+  
+    ;; Buffer ballet – pirouette through buffers:
+    (aih/leader-keys
+      "b" '(:ignore t :wk "buffer")
+      "bb" '(switch-to-buffer :wk "Switch buffer")
+      "bk" '(kill-this-buffer :wk "Kill this buffer")
+      "bn" '(next-buffer :wk "Next buffer")
+      "bp" '(previous-buffer :wk "Previous buffer")
+      "br" '(revert-buffer :wk "Revert buffer"))
+
+    ;; Channel your inner sorcerer – evaluate elisp incantations:
+    (aih/leader-keys
+      "C-e" '(:ignore t :wk "Evaluate")
+      "C-e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+      "C-e d" '(eval-defun :wk "Evaluate defun containing or after point")
+      "C-e e" '(eval-expression :wk "Evaluate and elisp expression")
+      "C-e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+      "C-e r" '(eval-region :wk "Evaluate elisp in region"))
+  
+    ;; Seek wisdom from the ancient scrolls (because help is never too far):
+    (aih/leader-keys
+      "h" '(:ignore t :wk "Help")
+      "h f" '(describe-function :wk "Describe function")
+      "h v" '(describe-variable :wk "Describe variable")
+      ;;"h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :wk "Reload emacs config"))
+      "h r r" '(reload-init-file :wk "Reload emacs config"))
+  
+    ;; Toggle modes like a light switch (because code needs ambiance):
+    (aih/leader-keys
+      "t" '(:ignore t :wk "Toggle")
+      "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+      "t t" '(visual-line-mode :wk "Toggle truncated lines"))
+
     )
 #+end_src
 
+*** Reload Emacs
 
-* Features
-** Terminal
-*** Vterm
-**** Get VTerm
+Because even code needs a fresh coat of magic sometimes.
+
 #+begin_src emacs-lisp
-  (use-package vterm
-    :ensure t
-    :config (setq vterm-max-scrollback 5000))
+  (defun reload-init-file ()
+    (interactive)
+    (load-file user-init-file)
+    (load-file user-init-file))
 #+end_src
-**** Toggle
+
+Invoke this spell with M-x reload-init-file, and watch your Emacs dance in delight!
+Remember, every function is a tiny incantation – may yours be bug-free and enchanting! 🌟🔮
+
+*** Grabbing source block content as a string
+
+Because sometimes code wants to be more than just bits and bytes – it wants to be poetry.
+
+#+name: grab
+#+begin_src emacs-lisp :var name="" :noweb-ref none :tangle no
+(if-let ((block-pos (org-babel-find-named-block name))
+         (block (org-element-at-point block-pos)))
+    (format "%S" (string-trim (org-element-property :value block)))
+  ;; look for :noweb-ref matches
+  (let (block-contents)
+    (org-element-cache-map
+     (lambda (src)
+       (when (and (not (org-in-commented-heading-p nil src))
+                  (not (org-in-archived-heading-p nil src))
+                  (let* ((lang (org-element-property :language src))
+                         (params
+                          (apply
+                           #'org-babel-merge-params
+                           (append
+                            (org-with-point-at (org-element-property :begin src)
+                              (org-babel-params-from-properties lang t))
+                            (mapcar
+                             (lambda (h)
+                               (org-babel-parse-header-arguments h t))
+                             (cons (org-element-property :parameters src)
+                                   (org-element-property :header src))))))
+                         (ref (alist-get :noweb-ref params)))
+                    (equal ref name)))
+         (push (org-babel--normalize-body src)
+               block-contents)))
+     :granularity 'element
+     :restrict-elements '(src-block))
+    (and block-contents
+         (format "%S"
+                 (mapconcat
+                  #'identity
+                  (nreverse block-contents)
+                  "\n\n")))))
+#+end_src
+
+There we go, that's all it takes! This can be used via the form =<<grab("block-name")>>=.
+
+
+* Packages
+
+** Loading instructions
+:properties:
+:header-args:emacs-lisp: :tangle no
+:end:
+
+*** Packages in MELPA/ELPA/emacsmirror
+
+To install ~some-package~ from MELPA, ELPA or emacsmirror:
 #+begin_src emacs-lisp
-  (use-package vterm-toggle
-    :after vterm
+(use-package some-package)
+#+end_src
+
+*** Packages from git repositories
+
+To install a package directly from a particular repo, you'll need to specify
+a ~:recipe~. You'll find documentation on what ~:recipe~ accepts [[https://github.com/raxod502/straight.el#the-recipe-format][here]]:
+#+begin_src emacs-lisp
+(use-package another-package
+  :recipe (:host github :repo "username/repo"))
+#+end_src
+
+If the package you are trying to install does not contain a ~PACKAGENAME.el~
+file, or is located in a subdirectory of the repo, you'll need to specify
+~:files~ in the ~:recipe~:
+#+begin_src emacs-lisp
+(use-package this-package
+  :recipe (:host github :repo "username/repo"
+           :files ("some-file.el" "src/lisp/*.el")))
+#+end_src
+
+** Tools
+
+*** WHICH-KEY
+
+Because every keybinding deserves a spotlight and a drumroll.
+
+#+begin_src emacs-lisp
+  (use-package which-key
+    :init
+    (which-key-mode 1)
     :config
-    ;; When running programs in Vterm and in 'normal' mode, make sure that ESC
-    ;; kills the program as it would in most standard terminal programs.
-    (evil-define-key 'normal vterm-mode-map (kbd "<escape>") 'vterm--self-insert)
-    (setq vterm-toggle-fullscreen-p nil)
-    (setq vterm-toggle-scope 'project)
-    (add-to-list 'display-buffer-alist
-                 '((lambda (buffer-or-name _)
-                     (let ((buffer (get-buffer buffer-or-name)))
-                       (with-current-buffer buffer
-                         (or (equal major-mode 'vterm-mode)
-                             (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
-                   (display-buffer-reuse-window display-buffer-at-bottom)
-                   ;;(display-buffer-reuse-window display-buffer-in-direction)
-                   ;;display-buffer-in-direction/direction/dedicated is added in emacs27
-                   ;;(direction . bottom)
-                   ;;(dedicated . t) ;dedicated is supported in emacs27
-                   (reusable-frames . visible)
-                   (window-height . 0.4))))
-#+end_src
-** Org Mode
-*** Enabling Table of Contents
-#+begin_src emacs-lisp
-  (use-package toc-org
-    :commands toc-org-enable
-    :init (add-hook 'org-mode-hook 'toc-org-enable))
+    (setq which-key-side-window-location 'bottom
+          which-key-sort-order #'which-key-key-order-alpha
+          which-key-sort-uppercase-first nil
+          which-key-add-column-padding 1
+          which-key-max-display-columns nil
+          which-key-min-display-lines 6
+          which-key-side-window-slot -10
+          which-key-side-window-max-height 0.25
+          which-key-idle-delay 0.8
+          which-key-max-description-length 25
+          which-key-allow-imprecise-window-fit t
+          which-key-separator " → " ))
 #+end_src
 
-*** Enabling Org Bullets
-Org-bullets gives us attractive bullets rather than asterisks.
+Let your keybindings shine like stars in the Emacs galaxy! 🌟🔑
+
+*** Magit
+
+Because Git deserves an elegant dance partner, not just a command-line affair.
 
 #+begin_src emacs-lisp
-  (add-hook 'org-mode-hook 'org-indent-mode)
-  (use-package org-bullets)
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(use-package magit)
 #+end_src
 
-*** Disable Electric Indent
-Org mode source blocks have some really weird and annoying default indentation behavior.  I think this has to do with electric-indent-mode, which is turned on by default in Emacs.  So let's turn it OFF!
+Magit is an interface to the version control system Git, implemented
+as an Emacs package. It fills the glaring gap between the Git
+command-line interface and various GUIs, letting you perform trivial
+as well as elaborate version control tasks with just a couple of
+mnemonic key presses.
+
+Magit aspires to be a complete Git porcelain, making it both faster
+and more intuitive than either the command line or any GUI. 
+Whether you're a Git beginner or an expert, Magit will make you a more
+effective version control user. 
+
+Invoke Magit with M-x magit-status, and let your Git repositories
+waltz with elegance! 🌟🎩 
+
+*** Company
+
+Because every keystroke is a chance for completion magic.
+
+Company is a text completion framework for Emacs, and its name stands
+for "complete anything." It's like having a helpful assistant that
+anticipates your next move and suggests completions for you. 
 
 #+begin_src emacs-lisp
-  (electric-indent-mode -1)
+  (use-package company 
+    :ensure t
+    :config
+    (setq company-idle-delay 0.5
+          company-minimum-prefix-length 2)
+    (setq company-show-numbers t)
+    (add-hook 'evil-normal-state-entry-hook #'company-abort)) ;; Make aborting less annoying.
 #+end_src
 
-*** Source Code Block Tag Expansion
-Org-tempo is not a separate package but a module within org that can be enabled.  Org-tempo allows for '<s' followed by TAB to expand to a begin_src tag.  Other expansions available include:
+Once you've summoned Company, it will weave its suggestions into your
+code like a skilled weaver. Completion will start automatically after
+you type a few letters, and you can navigate through the candidates
+using C-n, C-p, <return>, or <tab>. Press <f1> to see documentation or
+C-w to view the source.
 
-| Typing the below + TAB | Expands to ...                          |
-|------------------------+-----------------------------------------|
-| <a                     | '#+BEGIN_EXPORT ascii' … '#+END_EXPORT  |
-| <c                     | '#+BEGIN_CENTER' … '#+END_CENTER'       |
-| <C                     | '#+BEGIN_COMMENT' … '#+END_COMMENT'     |
-| <e                     | '#+BEGIN_EXAMPLE' … '#+END_EXAMPLE'     |
-| <E                     | '#+BEGIN_EXPORT' … '#+END_EXPORT'       |
-| <h                     | '#+BEGIN_EXPORT html' … '#+END_EXPORT'  |
-| <l                     | '#+BEGIN_EXPORT latex' … '#+END_EXPORT' |
-| <q                     | '#+BEGIN_QUOTE' … '#+END_QUOTE'         |
-| <s                     | '#+BEGIN_SRC' … '#+END_SRC'             |
-| <v                     | '#+BEGIN_VERSE' … '#+END_VERSE'         |
+*** Projectile
+
+;Because every project deserves a guiding star.
+
+Projectile is an Emacs package that provides project management and
+navigation features. It helps you organize your codebase, switch
+between projects effortlessly, and find files quickly. 
 
 
 #+begin_src emacs-lisp
-  (require 'org-tempo)
+  (use-package projectile
+    :config
+    (projectile-mode 1)
+    (if (eq system-type 'darwin)
+        (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map) ;; Recommended keymap prefix on macOS
+      (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map) ;; Recommended keymap prefix on Windows/Linux
+      )
+    )
 #+end_src
 
-*** Org-Remoting
+Once you've invoked Projectile, it will become your trusty guide
+through the code wilderness. Use M-x projectile-find-file to explore
+files within your project, and let your keystrokes lead the way! 🌟🗺️ 
+
+** Visuals
+
+*** Info colours
+
+Because even manuals deserve a touch of elegance and a splash of color.
+
+Info Colors enhances the appearance of Emacs manual pages by adding
+variable pitch fontification and color. Now, your documentation will
+be as delightful to read as a well-illustrated storybook. 
 
 #+begin_src emacs-lisp
-  (use-package org-remoteimg :elpaca (:host github :repo "gaoDean/org-remoteimg"))
+(use-package info-colors
+  :commands (info-colors-fontify-node))
 
-  ;; optional: set this to wherever you want the cache to be stored
-  ;; (setq url-cache-directory "~/.cache/emacs/url")
-
-  (setq org-display-remote-inline-images 'cache) ;; enable caching
+(add-hook 'Info-selection-hook 'info-colors-fontify-node)
 #+end_src
 
-*** Babel
+To experience the magic, simply invoke Info (M-x Info) and let the
+colors guide your exploration! May your knowledge be vivid and your
+syntax highlighting impeccable! 📚🌈 
+
+*** Doom Modeline
+
+Because every line of code deserves a stylish outfit.
+
+Doom Modeline is a delightful mode-line package for Emacs, designed to
+be informative, elegant, and customizable. It adds a touch of
+sophistication to your Emacs interface, making it both functional and
+visually appealing. 
+
 #+begin_src emacs-lisp
-  (setq org-confirm-babel-evaluate nil
-        org-src-fontify-natively t
-        org-src-tab-acts-natively t)
-
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (perl       . t)
-     (python     . t)
-     (js         . t)
-     (css        . t)
-     (sass       . t)
-     (C          . t)
-     (java       . t)
-     (shell      . t))
-   )
+  (use-package doom-modeline
+     :ensure t
+     :init (doom-modeline-mode 1))
 #+end_src
 
-*** Visuals
-**** Org-Modern
+**** Height
+
+Now, let's adjust the height to make our modeline feel just right:
+
+#+begin_src emacs-lisp
+(setq doom-modeline-height 45)
+#+end_src
+
+Invoke this magic with M-x doom-modeline-mode, and watch your mode-line transform!
+May your code be well-dressed and your line heights just perfect! 🌟👔
+
+*** Centaur Tabs
+
+;; Because every buffer deserves a stylish tab and a cozy spot in the tab bar.
+
+Centaur Tabs is an Emacs package that enhances your tab bar, making it
+both functional and visually appealing. It provides a modern-looking
+tab system with customizable icons, close buttons, and more. 
+
+
+#+begin_src emacs-lisp
+  (use-package centaur-tabs
+    :demand
+    :config
+    (centaur-tabs-mode t)
+    (setq centaur-tabs-height 36
+          centaur-tabs-set-icons t
+          centaur-tabs-modified-marker "o"
+          centaur-tabs-close-button "×"
+          centaur-tabs-set-bar 'above
+          centaur-tabs-gray-out-icons 'buffer)
+    :bind
+    ("C-<prior>" . centaur-tabs-backward)
+    ("C-<next>" . centaur-tabs-forward))
+#+end_src
+
+Once you've summoned Centaur Tabs, your buffers will feel right at
+home in the tab bar. Use C-<prior> and C-<next> to navigate through
+your cozy tabs, and may your buffers thrive! 🌟📜 
+
+*** Nerd Icons
+
+Because every buffer deserves a stylish tab and a cozy spot in the tab bar.
+
+Nerd Icons enhances your Emacs interface by adding Nerd Font icons to
+your buffers. It works seamlessly on both GUI and terminal, and all
+you need is a Nerd Font installed on your system. 
+
+#+begin_src emacs-lisp
+  (use-package nerd-icons
+    ;; :custom
+    ;; The Nerd Font you want to use in GUI
+    ;; "Symbols Nerd Font Mono" is the default and is recommended
+    ;; but you can use any other Nerd Font if you want
+    ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
+    :config
+    (setcdr (assoc "m" nerd-icons-extension-icon-alist)
+            (cdr (assoc "matlab" nerd-icons-extension-icon-alist))))
+#+end_src
+
+To use Nerd Icons, simply invoke M-x nerd-icons-mode, and let your
+buffers wear their stylish icons! May your code be adorned and your
+tabs as cozy as a warm cup of tea! 🌟🗂️ 
+
+*** Writeroom
+
+Because sometimes code needs a quiet room to think.
+
+Writeroom Mode provides a distraction-free writing environment in
+Emacs. It's like a cozy cabin in the woods where your code can focus
+and breathe. Let's set the stage for our Writeroom adventure:
+
+Adjust the text scale (because sometimes smaller is better):
+
+#+begin_src emacs-lisp
+(setq +zen-text-scale 0.8)
+#+end_src
+
+Whether to use a serifed font with `mixed-pitch-mode':
+
+#+begin_src emacs-lisp 
+(defvar +zen-serif-p t
+  "Whether to use a serifed font with `mixed-pitch-mode'.")
+
+;; The value `org-modern-hide-stars' is set to:
+
+(defvar +zen-org-starhide t
+  "The value `org-modern-hide-stars' is set to.")
+#+end_src
+
+Now, let's invoke Writeroom Mode and create a serene space for our prose:
+
+#+begin_src emacs-lisp
+  (use-package writeroom-mode
+    :config
+    (defvar-local +zen--original-org-indent-mode-p nil)
+    (defvar-local +zen--original-mixed-pitch-mode-p nil)
+    (defun +zen-enable-mixed-pitch-mode-h ()
+      "Enable `mixed-pitch-mode' when in `+zen-mixed-pitch-modes'."
+      (when (apply #'derived-mode-p +zen-mixed-pitch-modes)
+        (if writeroom-mode
+            (progn
+              (setq +zen--original-mixed-pitch-mode-p mixed-pitch-mode)
+              (funcall (if +zen-serif-p #'mixed-pitch-serif-mode #'mixed-pitch-mode) 1))
+          (funcall #'mixed-pitch-mode (if +zen--original-mixed-pitch-mode-p 1 -1)))))
+    (defun +zen-prose-org-h ()
+      "Reformat the current Org buffer appearance for prose."
+      (when (eq major-mode 'org-mode)
+        (setq display-line-numbers nil
+              visual-fill-column-width 60
+              org-adapt-indentation nil)
+        (when (featurep 'org-modern)
+          (setq-local org-modern-star '("🙘" "🙙" "🙚" "🙛")
+                      ;; org-modern-star '("🙐" "🙑" "🙒" "🙓" "🙔" "🙕" "🙖" "🙗")
+                      org-modern-hide-stars +zen-org-starhide)
+          (org-modern-mode -1)
+          (org-modern-mode 1))
+        (setq
+         +zen--original-org-indent-mode-p org-indent-mode)
+        (org-indent-mode -1)))
+    (defun +zen-nonprose-org-h ()
+      "Reverse the effect of `+zen-prose-org'."
+      (when (eq major-mode 'org-mode)
+        (when (bound-and-true-p org-modern-mode)
+          (org-modern-mode -1)
+          (org-modern-mode 1))
+        (when +zen--original-org-indent-mode-p (org-indent-mode 1))))
+    (cl-loop for var in '(display-line-numbers
+                       visual-fill-column-width
+                       org-adapt-indentation
+                       org-modern-mode
+                       org-modern-star
+                       org-modern-hide-stars)
+          do (cl-pushnew var writeroom--local-variables :test #'eq))
+    (add-hook 'writeroom-mode-enable-hook #'+zen-prose-org-h)
+    (add-hook 'writeroom-mode-disable-hook #'+zen-nonprose-org-h))
+#+end_src
+
+Invoke this serene space with M-x writeroom-mode, and let your code find its inner calm! 🌟📝
+
+*** Treemacs
+
+Because every project deserves a treehouse in the code forest.
+
+Treemacs is an Emacs package that provides a tree-style file explorer
+and project navigation. It's like having a cozy treehouse where your
+files can hang out and chat with the squirrels.
+
+#+begin_src emacs-lisp
+(use-package treemacs
+  :ensure t
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :config
+  (progn
+    (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
+          treemacs-deferred-git-apply-delay        0.5
+          treemacs-directory-name-transformer      #'identity
+          treemacs-display-in-side-window          t
+          treemacs-eldoc-display                   'simple
+          treemacs-file-event-delay                2000
+          treemacs-file-extension-regex            treemacs-last-period-regex-value
+          treemacs-file-follow-delay               0.2
+          treemacs-file-name-transformer           #'identity
+          treemacs-follow-after-init               t
+          treemacs-expand-after-init               t
+          treemacs-find-workspace-method           'find-for-file-or-pick-first
+          treemacs-git-command-pipe                ""
+          treemacs-goto-tag-strategy               'refetch-index
+          treemacs-header-scroll-indicators        '(nil . "^^^^^^")
+          treemacs-hide-dot-git-directory          t
+          treemacs-indentation                     2
+          treemacs-indentation-string              " "
+          treemacs-is-never-other-window           nil
+          treemacs-max-git-entries                 5000
+          treemacs-missing-project-action          'ask
+          treemacs-move-forward-on-expand          nil
+          treemacs-no-png-images                   nil
+          treemacs-no-delete-other-windows         t
+          treemacs-project-follow-cleanup          nil
+          treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+          treemacs-position                        'left
+          treemacs-read-string-input               'from-child-frame
+          treemacs-recenter-distance               0.1
+          treemacs-recenter-after-file-follow      nil
+          treemacs-recenter-after-tag-follow       nil
+          treemacs-recenter-after-project-jump     'always
+          treemacs-recenter-after-project-expand   'on-distance
+          treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
+          treemacs-project-follow-into-home        nil
+          treemacs-show-cursor                     nil
+          treemacs-show-hidden-files               t
+          treemacs-silent-filewatch                nil
+          treemacs-silent-refresh                  nil
+          treemacs-sorting                         'alphabetic-asc
+          treemacs-select-when-already-in-treemacs 'move-back
+          treemacs-space-between-root-nodes        t
+          treemacs-tag-follow-cleanup              t
+          treemacs-tag-follow-delay                1.5
+          treemacs-text-scale                      nil
+          treemacs-user-mode-line-format           nil
+          treemacs-user-header-line-format         nil
+          treemacs-wide-toggle-width               70
+          treemacs-width                           35
+          treemacs-width-increment                 1
+          treemacs-width-is-initially-locked       t
+          treemacs-workspace-switch-cleanup        nil)
+
+    ;; The default width and height of the icons is 22 pixels. If you are
+    ;; using a Hi-DPI display, uncomment this to double the icon size.
+    ;;(treemacs-resize-icons 44)
+
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode 'always)
+    (when treemacs-python-executable
+      (treemacs-git-commit-diff-mode t))
+
+    (pcase (cons (not (null (executable-find "git")))
+                 (not (null treemacs-python-executable)))
+      (`(t . t)
+       (treemacs-git-mode 'deferred))
+      (`(t . _)
+       (treemacs-git-mode 'simple)))
+
+    (treemacs-hide-gitignored-files-mode nil))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t d"   . treemacs-select-directory)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-evil
+  :after (treemacs evil)
+  :ensure t)
+
+(use-package treemacs-projectile
+  :after (treemacs projectile)
+  :ensure t)
+
+(use-package treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once)
+  :ensure t)
+
+(use-package treemacs-magit
+  :after (treemacs magit)
+  :ensure t)
+
+(use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
+  :after (treemacs persp-mode) ;;or perspective vs. persp-mode
+  :ensure t
+  :config (treemacs-set-scope-type 'Perspectives))
+
+(use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
+  :after (treemacs)
+  :ensure t
+  :config (treemacs-set-scope-type 'Tabs))
+#+end_src
+
+*** Rainbow Mode
+Because every color deserves to shine like a rainbow.
+
+Rainbow Mode enhances your Emacs experience by displaying the actual
+color as a background for any hex color value (e.g., #ffffff). It's
+like having a magical palette where your code can express its true
+colors.
+
+#+begin_src emacs-lisp
+  (use-package rainbow-mode
+    :diminish
+    :hook org-mode prog-mode)
+#+End_src
+
+Now, your hex color values will bloom like flowers in spring! 🌈🌼 May
+your code be vibrant and your syntax colorful! 🚀🎨 
+
+*** Rainbow Delimiters
+
+Because parentheses deserve to be as colorful as a carnival.
+
+Rainbow Delimiters adds rainbow coloring to parentheses, brackets, and
+braces based on their depth. Each successive level is highlighted in a
+different color, making it easy to spot matching delimiters and orient
+yourself in the code.
+
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :hook ((emacs-lisp-mode . rainbow-delimiters-mode)
+           (clojure-mode . rainbow-delimiters-mode)))
+#+end_src
+
+Now, your parentheses will dance like confetti at a celebration! 🎉🎈
+May your code be well-structured and your delimiters festive! 🚀🎪 
+
+** Extras
+
+*** Perspective
+Because every project deserves a treehouse in the code forest.
+
+Perspective is an Emacs package that provides multiple named
+workspaces (or “perspectives”) in Emacs, similar to multiple desktops
+in window managers like Awesome and XMonad, and Spaces on the
+Mac. Each perspective has its own buffer list and its own window
+layout, along with some other isolated niceties, like the xref
+ring. This makes it easy to work on many separate projects without
+getting lost in all the buffers. Switching to a perspective activates
+its window configuration, and when in a perspective, only its buffers
+are available (by default). Each Emacs frame has a distinct list of
+perspectives. Perspective supports saving its state to a file, so
+long-lived work sessions may be saved and recovered as needed. 
+
+Invoke this cozy treehouse with M-x persp-mode, and let your buffers
+swing from branch to branch! 🌟🌳 
+
+#+begin_src emacs-lisp
+  (use-package perspective
+    :custom
+    ;; NOTE! I have also set 'SCP =' to open the perspective menu.
+    ;; I'm only setting the additional binding because setting it
+    ;; helps suppress an annoying warning message.
+    (persp-mode-prefix-key (kbd "C-c M-p"))
+    :init
+    (persp-mode)
+    :config
+    ;; Sets a file to write to when we save states
+    (setq persp-state-default-file "~/.config/emacs/sessions"))
+
+  ;; This will group buffers by persp-name in ibuffer.
+  (add-hook 'ibuffer-hook
+            (lambda ()
+              (persp-ibuffer-set-filter-groups)
+              (unless (eq ibuffer-sorting-mode 'alphabetic)
+                (ibuffer-do-sort-by-alphabetic))))
+
+  ;; Automatically save perspective states to file when Emacs exits.
+  (add-hook 'kill-emacs-hook #'persp-state-save)
+#+end_src
+
+*** Elcord
+
+Because every Emacs session deserves a grand announcement.
+
+Elcord is an Emacs package that integrates with Discord, allowing you
+to show off your current major mode as your status. Now, when you're
+deep in your code, everyone will know that you're conquering the Emacs
+universe! 
+
+#+begin_src emacs-lisp
+(use-package elcord
+  :commands elcord-mode
+  :config
+  (setq elcord-use-major-mode-as-main-icon t))
+#+end_src
+
+Invoke this grand announcement with M-x elcord-mode, and let your
+Discord friends marvel at your coding prowess! 🌟🎮 
+
+* File Types
+
+** Plain text
+
+*** Margin without line numbers
+
+Sometimes, the absence of line numbers can leave text buffers feeling
+a bit off. Fear not! We shall create a delightful margin for your text
+buffers, even without those line numbers.
+
+Let's set the stage for our cozy margin adventure:
+
+#+begin_src emacs-lisp
+(defvar +text-mode-left-margin-width 1
+  "The `left-margin-width' to be used in `text-mode' buffers.")
+
+(defun +setup-text-mode-left-margin ()
+  (when (and (derived-mode-p 'text-mode)
+             (not (and (bound-and-true-p visual-fill-column-mode)
+                       visual-fill-column-center-text))
+             (eq (current-buffer) ; Check current buffer is active.
+                 (window-buffer (frame-selected-window))))
+    (setq left-margin-width (if display-line-numbers
+                                0 +text-mode-left-margin-width))
+    (set-window-buffer (get-buffer-window (current-buffer))
+                       (current-buffer))))
+
+#+end_src
+
+Now, let's hook this cozy margin up to all the events that matter:
+
+#+begin_src emacs-lisp
+(add-hook 'window-configuration-change-hook #'+setup-text-mode-left-margin)
+(add-hook 'display-line-numbers-mode-hook #'+setup-text-mode-left-margin)
+(add-hook 'text-mode-hook #'+setup-text-mode-left-margin)
+#+end_src
+
+Lastly, let's remove line numbers from text mode, because sometimes
+simplicity is the best design: 
+
+#+begin_src emacs-lisp
+(remove-hook 'text-mode-hook #'display-line-numbers-mode)
+#+end_src
+
+Invoke this cozy margin with M-x +setup-text-mode-left-margin, and let
+your text buffers snuggle up! 🌟📜
+
+** Org
+:properties:
+:CUSTOM_ID: org
+:end:
+
+**** Git diffs
+
+Protesilaos has paved the way for better git diff chunk headings, and
+we shall follow in his footsteps. Let's create a more useful hunk
+header that shows the parent heading instead of just the immediate
+line above the hunk.
+#+begin_src fundamental
+,*.org   diff=org
+#+end_src
+
+Then, add a regex for it to ~/.config/git/config:
+#+begin_src gitconfig
+[diff "org"]
+  xfuncname = "^(\\*+ +.*)$"
+#+end_src
+
+*** Packages
+
+**** Visuals
+
+***** Org Modern
+
+Org Modern, crafted by Minad, brings a fresh and stylish look to your
+Org buffers. Let's adorn your headlines, tables, and source blocks
+with delightful symbols and tasteful styling. 
 
 #+begin_src emacs-lisp
   (use-package org-modern
@@ -567,35 +1494,311 @@ Org-tempo is not a separate package but a module within org that can be enabled.
             ("name" . "⁍")
             ("header" . "›")
             ("caption" . "☰")
-            ("results" . "🠶")))
-    )
+            ("results" . "🠶"))))
 #+end_src
 
-* Language Server Protocal
+***** Heading structure
+
+Org Outline Tree, crafted by Townk, brings a delightful package for
+viewing and managing the heading structure in your Org buffers. Let's
+adorn your headlines with a beautiful treehouse where you can explore
+and navigate with ease. 
+
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :init
-    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-    (setq lsp-keymap-prefix "C-c l")
-    :hook (;; if you want which-key integration
-           (lsp-mode . lsp-enable-which-key-integration))
-    :commands lsp)
+  (use-package org-ol-tree
+    :ensure (:host github
+                   :repo "Townk/org-ol-tree")
+    :commands org-ol-tree
+    :config
+    (setq org-ol-tree-ui-icon-set
+          (if (and (display-graphic-p)
+                   (fboundp 'all-the-icons-material))
+              'all-the-icons
+            'unicode))
+    (org-ol-tree-ui--update-icon-set))
 
-  ;; optionally
-  (use-package lsp-ui :commands lsp-ui-mode)
-  ;; if you are helm user
-  (use-package helm-lsp :commands helm-lsp-workspace-symbol)
-  ;; if you are ivy user
-  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+  (with-eval-after-load 'general
+    (with-eval-after-load 'org
+      ;; setup up 'SPC' as the global leader key
+      (general-create-definer aih/leader-keys
+        :states '(normal insert virtual emacs)
+        :keymaps 'override
+        :prefix "SPC" ;; set leader
+        :global-prefix "M-SPC") ;; access leader in insert mode
 
-  ;; optionally if you want to use debugger
-  (use-package dap-mode)
-  ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+      (aih/leader-keys
+        "O" '(org-ol-tree :wk "Outline"))))
 #+end_src
 
-* Languages
+Now, invoke this delightful treehouse with M-x org-ol-tree, and let your headings thrive! 🌟🌳
+
+**** Extra functionailit
+
+***** org-auto-tangle
+Because even your org files deserve a little dance!
+
+#+begin_src emacs-lisp
+  (use-package org-auto-tangle
+    :load-path "site-lisp/org-auto-tangle/"    ;; this line is necessary only if you cloned the repo in your site-lisp directory 
+    :defer t
+    :hook (org-mode . org-auto-tangle-mode))
+#+end_src
+
+
+***** HTTP requests
+
+The ob-http package is like the James Bond of Emacs packages. It
+allows you to make secret agent-style HTTP requests right from your
+code. Imagine your Emacs buffer as a sleek Aston Martin, and ob-http
+as the gadget-filled dashboard. 
+
+#+begin_src emacs-lisp
+(use-package ob-http
+  :commands org-babel-execute:http)
+#+end_src
+
+Remember, ob-http doesn’t just fetch data; it interrogates servers. If
+you hear your Emacs buffer whispering, “The code is shaken, not
+stirred,” you know ob-http is at work. 🌐
+
+***** Transclusion
+
+Ah, transclusion—the mystical art of summoning content from other
+dimensions (or files). Imagine your Emacs buffer as a magical
+grimoire, and org-transclusion as the spell that brings forth hidden
+knowledge. ✨ 
+
+#+begin_src emacs-lisp
+(use-package org-transclusion
+  :commands org-transclusion-mode
+  :init
+  (with-eval-after-load 'general
+    (with-eval-after-load 'org
+      ;; setup up 'SPC' as the global leader key
+      (general-create-definer aih/leader-keys
+        :states '(normal insert virtual emacs)
+        :keymaps 'override
+        :prefix "SPC" ;; set leader
+        :global-prefix "M-SPC") ;; access leader in insert mode
+
+      (aih/leader-keys
+        "<f12>" '(org-transclusion-mode :wk "Transclusion Mode")))))
+#+end_src
+
++ =org-transclusion-mode= is your magical amulet. Invoke it, and your
+  Emacs buffer becomes a portal to other org files. 
++ The leader key (SPC) is like the secret knock to open the
+  interdimensional gateway. Press =<f12>= to transclude content from
+  distant realms. 
+Remember, with great transclusion comes great responsibility. Use it
+wisely, or you might accidentally summon a recipe for unicorn stew. 🦄 
+
+***** Cooking recipes
+
+Hungry for knowledge? *org-chef* is your culinary companion. It’s like
+having Gordon Ramsay whispering cooking secrets in your ear while you
+code. 🍳 
+
+I *need* this in my life. It take a URL to a recipe from a common site, and
+inserts an org-ified version at point. Isn't that just great.
+
+Loading after org seems a bit premature. Let's just load it when we
+try to use it, either by command or in a capture template.
+
+#+begin_src emacs-lisp
+(use-package org-chef
+  :commands (org-chef-insert-recipe org-chef-get-recipe-from-url))
+#+end_src
+
++ org-chef-insert-recipe is your magic ladle. Give it a URL to a
+  recipe, and it stirs up an org-ified version right where you need
+  it. 
++ Loading after org? That’s org-chef saying, “I’ll be ready when you’re hungry.”
+
+
+***** Enabling Table of Contents
+
+Imagine your Emacs buffer as a mystical scroll, and the toc-org
+package as the spell that conjures a Table of Contents (TOC) right
+before your eyes. 📜✨ 
+
+#+begin_src emacs-lisp
+  (use-package toc-org
+    :commands toc-org-enable
+    :init (add-hook 'org-mode-hook 'toc-org-enable))
+#+end_src
+
++ =toc-org-enable= is the incantation. When you invoke it, your org
+  files gain the power to create TOCs. 
++ The org-mode-hook is like a secret society meeting. Whenever you
+  enter org-mode, the TOC spell activates. 
+
+Now, your documents will have TOCs, guiding readers through the
+labyrinth of knowledge. Beware of minotaurs! 🌟 
+
+***** Enabling Org Bullets
+Org-bullets gives us attractive bullets rather than
+asterisks.Org-bullets transforms your plain asterisks into *glorious
+bullets*. Imagine your Emacs buffer as a medieval manuscript, and
+org-bullets as the ornate ink that embellishes your headings. 🌟🔍 
+
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook 'org-indent-mode)
+  (use-package org-bullets)
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+#+end_src
+
+***** Disable Electric Indent
+
+Electric-indent-mode, like a mischievous pixie, messes with your org
+source blocks. It’s time to put it in its place! ⚡🧚
+
+#+begin_src emacs-lisp
+  (electric-indent-mode -1)
+#+end_src
+
++ Electric-indent-mode, like a mischievous pixie, messes with your org
+  source blocks. It’s time to put it in its place! ⚡🧚 
+
+***** Source Code Block Tag Expansion
+
+Imagine your Emacs buffer as a mystical grimoire, and org-tempo as the
+spell that brings forth powerful tags with a mere keystroke. 📜✨ 
+
+Here’s how to unlock these enchantments:
+
+#+begin_src emacs-lisp
+  (require 'org-tempo)
+#+end_src
+
+Now, when you type <s and hit TAB, behold! The BEGIN_SRC tag materializes, ready to encapsulate your code like a protective ward. But that’s not all! Let’s explore other expansions:
+
+| Typing the below + TAB | Expands to ...                          |
+|------------------------+-----------------------------------------|
+| <a                     | '#+BEGIN_EXPORT ascii' … '#+END_EXPORT  |
+| <c                     | '#+BEGIN_CENTER' … '#+END_CENTER'       |
+| <C                     | '#+BEGIN_COMMENT' … '#+END_COMMENT'     |
+| <e                     | '#+BEGIN_EXAMPLE' … '#+END_EXAMPLE'     |
+| <E                     | '#+BEGIN_EXPORT' … '#+END_EXPORT'       |
+| <h                     | '#+BEGIN_EXPORT html' … '#+END_EXPORT'  |
+| <l                     | '#+BEGIN_EXPORT latex' … '#+END_EXPORT' |
+| <q                     | '#+BEGIN_QUOTE' … '#+END_QUOTE'         |
+| <s                     | '#+BEGIN_SRC' … '#+END_SRC'             |
+| <v                     | '#+BEGIN_VERSE' … '#+END_VERSE'         |
+
+<a: Reveals the BEGIN_EXPORT ascii spell, guarding your text like ancient runes.
+<c: Conjures the BEGIN_CENTER charm, centering your content as if guided by celestial forces.
+<C: Unleashes the BEGIN_COMMENT incantation, hiding secrets in plain sight.
+<e: Summons the BEGIN_EXAMPLE hexagram, illuminating wisdom for all who seek it.
+<E: Invokes the BEGIN_EXPORT talisman, exporting knowledge across realms.
+<h: Channels the BEGIN_EXPORT html, weaving web-friendly spells.
+<l: Crafts the BEGIN_EXPORT latex, rendering your words in elegant glyphs.
+<q: Whispers the BEGIN_QUOTE mantra, encapsulating wisdom within quotation marks
+
+
+***** Org-Remoting
+
+magine your Emacs buffer as a mystical portal, and org-remoteimg as
+the enchanted key that unlocks remote images, bringing them inline
+with your org files. 🖼️✨ 
+
+Here’s how to wield this arcane power:
+
+#+begin_src emacs-lisp
+  (use-package org-remoteimg :ensure (:host github :repo "gaoDean/org-remoteimg"))
+
+  ;; optional: set this to wherever you want the cache to be stored
+  ;; (setq url-cache-directory "~/.cache/emacs/url")
+
+  (setq org-display-remote-inline-images 'cache) ;; enable caching
+#+end_src
+
+***** Babel
+
+Behold, fellow wizard of Emacs! Let us delve into the arcane arts of
+Babel, where code becomes incantations and buffers transform into
+grimoires. 🧙‍♂️✨ 
+
+#+begin_src emacs-lisp
+  (setq org-confirm-babel-evaluate nil
+        org-src-fontify-natively t
+        org-src-tab-acts-natively t)
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (perl       . t)
+     (python     . t)
+     (js         . t)
+     (css        . t)
+     (sass       . t)
+     (C          . t)
+     (java       . t)
+     (shell      . t))
+   )
+#+end_src
+
+*** Behaviour
+
+**** Tweaking defaults
+
+By default, *visual-line-mode* dances across our text like a
+mischievous sprite. But beware! It trips over tables in Org-mode and
+other plaintext realms. We shall bind it:
+
+#+begin_src emacs-lisp
+(remove-hook 'text-mode-hook #'visual-line-mode)
+
+#+end_src
+
+*Auto-fill-mode*, the scribe’s curse, wraps lines like an overzealous bard. But fear not! We shall wield it selectively:
+
+#+begin_src emacs-lisp
+(add-hook 'text-mode-hook #'auto-fill-mode)
+#+end_src
+
+**** Extra Functionality
+
+***** LSP support in =src= blocks
+
+Ah, fellow sorcerer of Emacs, let us weave a spell that brings forth the power of Language Server Protocols (LSPs) within our code blocks. 🧙‍♂️✨
+
+#+begin_src emacs-lisp
+  (cl-defmacro lsp-org-babel-enable (lang)
+    "Support LANG in org source code block."
+    (setq centaur-lsp 'lsp-mode)
+    (cl-check-type lang stringp)
+    (let* ((edit-pre (intern (format "org-babel-edit-prep:%s" lang)))
+           (intern-pre (intern (format "lsp--%s" (symbol-name edit-pre)))))
+      `(progn
+         (defun ,intern-pre (info)
+           (let ((file-name (->> info caddr (alist-get :file))))
+             (unless file-name
+               (setq file-name (make-temp-file "babel-lsp-")))
+             (setq buffer-file-name file-name)
+             (lsp-deferred)))
+         (put ',intern-pre 'function-documentation
+              (format "Enable lsp-mode in the buffer of org source block (%s)."
+                      (upcase ,lang)))
+         (if (fboundp ',edit-pre)
+             (advice-add ',edit-pre :after ',intern-pre)
+           (progn
+             (defun ,edit-pre (info)
+               (,intern-pre info))
+             (put ',edit-pre 'function-documentation
+                  (format "Prepare local buffer environment for org source block (%s)."
+                          (upcase ,lang))))))))
+  (defvar org-babel-lang-list
+    '("go" "python" "ipython" "bash" "sh"))
+  (dolist (lang org-babel-lang-list)
+    (eval `(lsp-org-babel-enable ,lang)))
+#+end_src
+
 ** Python
+
+Our trusty steed for Python. It’s like having a language-savvy
+companion who whispers Pythonic secrets in your ear. 🐍 
+
 #+begin_src emacs-lisp
   (use-package lsp-pyright
     :ensure t
@@ -606,14 +1809,20 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 
 ** Rust
 *** rustic
-Buffers are pretty great, but sometimes they can be named ... less usefully.
+
+Buffers are like enchanted scrolls, but sometimes their names lack
+magic. Fear not! We shall summon the rustic package:
 
 #+begin_src emacs-lisp
   (use-package rustic)
 #+end_src
 
 ** Swift
+
 *** lsp-sourcekit
+
+Our Swift whisperer. It knows the language’s secrets and brings them to light. 🌟
+
 #+begin_src emacs-lisp
   (use-package lsp-sourcekit
     :after lsp-mode
@@ -622,95 +1831,10 @@ Buffers are pretty great, but sometimes they can be named ... less usefully.
 #+end_src
 
 *** swift-mode
+
+Your Swift scribe. It prepares the canvas for your code masterpieces. 🎨
+
 #+begin_src emacs-lisp
   (use-package swift-mode
     :hook (swift-mode . (lambda () (lsp))))
-#+end_src
-
-
-* Packages
-** WHICH-KEY
-#+begin_src emacs-lisp
-  (use-package which-key
-    :init
-    (which-key-mode 1)
-    :config
-    (setq which-key-side-window-location 'bottom
-          which-key-sort-order #'which-key-key-order-alpha
-          which-key-sort-uppercase-first nil
-          which-key-add-column-padding 1
-          which-key-max-display-columns nil
-          which-key-min-display-lines 6
-          which-key-side-window-slot -10
-          which-key-side-window-max-height 0.25
-          which-key-idle-delay 0.8
-          which-key-max-description-length 25
-          which-key-allow-imprecise-window-fit t
-          which-key-separator " → " ))
-#+end_src
-
-** Rainbow Mode
-Display the actual color as a background for any hex color value (ex. #ffffff).  The code block below enables rainbow-mode in all programming modes (prog-mode) as well as org-mode, which is why rainbow works in this document.
-
-#+begin_src emacs-lisp
-  (use-package rainbow-mode
-    :diminish
-    :hook org-mode prog-mode)
-#+End_src
-
-** Rainbow Delimiters
-Adding rainbow coloring to parentheses.
-
-#+begin_src emacs-lisp
-  (use-package rainbow-delimiters
-    :hook ((emacs-lisp-mode . rainbow-delimiters-mode)
-           (clojure-mode . rainbow-delimiters-mode)))
-#+end_src
-
-** Projectile
-
-#+begin_src emacs-lisp
-  (use-package projectile
-    :config
-    (projectile-mode 1)
-    (if (eq system-type 'darwin)
-        (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map) ;; Recommended keymap prefix on macOS
-      (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map) ;; Recommended keymap prefix on Windows/Linux
-      )
-    )
-#+end_src
-
-** Perspective
-Perspective provides multiple named workspaces (or “perspectives”) in Emacs, similar to multiple desktops in window managers.  Each perspective has its own buffer list and its own window layout, along with some other isolated niceties, like the xref ring.
-
-#+begin_src emacs-lisp
-  (use-package perspective
-    :custom
-    ;; NOTE! I have also set 'SCP =' to open the perspective menu.
-    ;; I'm only setting the additional binding because setting it
-    ;; helps suppress an annoying warning message.
-    (persp-mode-prefix-key (kbd "C-c M-p"))
-    :init
-    (persp-mode)
-    :config
-    ;; Sets a file to write to when we save states
-    (setq persp-state-default-file "~/.config/emacs/sessions"))
-
-  ;; This will group buffers by persp-name in ibuffer.
-  (add-hook 'ibuffer-hook
-            (lambda ()
-              (persp-ibuffer-set-filter-groups)
-              (unless (eq ibuffer-sorting-mode 'alphabetic)
-                (ibuffer-do-sort-by-alphabetic))))
-
-  ;; Automatically save perspective states to file when Emacs exits.
-  (add-hook 'kill-emacs-hook #'persp-state-save)
-#+end_src
-** org-auto-tangle
-a simple emacs package to allow org file tangling upon save
-#+begin_src emacs-lisp
-  (use-package org-auto-tangle
-    :load-path "site-lisp/org-auto-tangle/"    ;; this line is necessary only if you cloned the repo in your site-lisp directory 
-    :defer t
-    :hook (org-mode . org-auto-tangle-mode))
 #+end_src
