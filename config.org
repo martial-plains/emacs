@@ -1532,7 +1532,7 @@ and navigate with ease.
 
 Now, invoke this delightful treehouse with M-x org-ol-tree, and let your headings thrive! 🌟🌳
 
-**** Extra functionailit
+**** Extra functionaility
 
 ***** org-auto-tangle
 Because even your org files deserve a little dance!
