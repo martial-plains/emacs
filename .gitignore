@@ -63,3 +63,6 @@ recentf
 
 # projectile
 projectile-bookmarks.eld
+
+# neovim cache
+/.cache
