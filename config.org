@@ -23,6 +23,10 @@
   (add-to-list 'load-path "~/.config/emacs/scripts/")
 #+end_src
 
+#+begin_src emacs-lisp
+(setq native-comp-async-report-warnings-errors nil)
+#+end_src
+
 ** Sourcing the scripts
 
 #+begin_src emacs-lisp
@@ -144,18 +148,17 @@ Ah, fellow seeker of arcane knowledge! You’ve embarked upon a perilous journey
 
 I use the legendary [[https://github.com/microsoft/cascadia-code][Cascadia Code]] font. It whispers secrets to your code, caressing each character with love. Install it, lest your buffers weep in monospaced agony. Remember, a true adventurer never settles for Comic Sans.
 
-* Initial setup
 
-** Personal information
+* Personal information
 
 #+begin_src emacs-lisp
 (setq user-full-name "AIH"
       user-mail-address "a.i.harvey@icloud.com")
 #+end_src
 
-** Better defaults
+* Better defaults
 
-*** Simple settings
+** Simple settings
 
 #+begin_src emacs-lisp
 (setq-default
@@ -173,7 +176,7 @@ We'll check for a battery during tangle via noweb, and only call
 ~display-battery-mode~ when the mystical battery sprites are present.
 
 #+name: battery-status-setup
-#+begin_src emacs-lisp :noweb-ref none
+#+begin_src emacs-lisp :noweb-ref none :eval yes :cache yes
 (require 'battery)
 (if (and battery-status-function
          (not (equal (alist-get ?L (funcall battery-status-function))
@@ -196,10 +199,9 @@ We shall reveal the mystical menubar, adorned with
 dropdown constellations of commands and secrets.
 
 #+begin_src emacs-lisp
-
-(if (and (eq system-type 'darwin) (not (is-in-terminal)))
-    (menu-bar-mode t)  ; Activate the menubar spell
-  (menu-bar-mode -1)) ; Conceal it from mere mortals
+  (if (and (eq system-type 'darwin) (not (is-in-terminal)))
+      (menu-bar-mode t)  ; Activate the menubar spell
+    (menu-bar-mode -1)) ; Conceal it from mere mortals
 #+end_src
 
 🌠 Disarm the Cluttered Toolbar! 🛡️
@@ -220,7 +222,7 @@ its enchanting whispers, allowing focus and clarity.
 (scroll-bar-mode -1) ; Hush, sweet scrollbar nymphs!
 #+end_src
 
-*** Terminal
+** Terminal
 
 🌠 Mouse Support for Terminal Wizards 🐭
 When you tread the mystical path of the terminal,
@@ -244,7 +246,7 @@ realms of copy and paste.
         :init (xclip-mode 1)))
 #+end_src
 
-*** Windows
+** Windows
 
 Ask the winds which buffer to reveal after splitting the window.
 
@@ -301,9 +303,7 @@ And behold, the missing arrow-key variants of window navigation shall appear!
         "w L" '(buf-move-right :wk "Buffer move right"))))
 #+end_src
 
-** Emacs configuration
-
-*** Display Line Numbers and Truncated Lines
+** Display Line Numbers and Truncated Lines
 
 Because counting lines is like playing hide-and-seek with code.
 And we all know that line numbers are the breadcrumbs of the programmer's forest.
@@ -314,7 +314,7 @@ And we all know that line numbers are the breadcrumbs of the programmer's forest
 #+end_src
 
 
-*** Transparency
+** Transparency
 
 Because sometimes Emacs needs to channel its inner ghost.
 Toggle transparency with =SPC c t= (because why not?).
@@ -339,7 +339,7 @@ Toggle transparency with =SPC c t= (because why not?).
       "c t" 'set-transparency))
 #+end_src
 
-*** Zooming In/Out
+** Zooming In/Out
 
 Because sometimes code needs a closer look, like a detective examining clues.
 Use CTRL + =/- for zooming in/out. Or, if you're feeling fancy, CTRL + the mouse wheel.
@@ -351,7 +351,7 @@ Use CTRL + =/- for zooming in/out. Or, if you're feeling fancy, CTRL + the mouse
   (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 #+end_src
 
-*** Evil mode
+** Evil mode
 
 Load Evil Mode (because even code needs a little mischief)
 
@@ -373,6 +373,18 @@ Load Evil Collection (because why settle for just one kind of evil?)
     :config
     (setq evil-collection-mode-list '(dashboard dired ibuffer))
     (evil-collection-init))
+
+  (use-package evil-surround
+    :ensure t
+    :config
+    (global-evil-surround-mode 1))
+
+  (use-package evil-commentary
+    :init (evil-commentary-mode))
+
+  (use-package evil-easymotion
+    :config
+    (evilem-default-keybindings "SPC"))
 #+end_src
 
 Learn Evil with the Evil Tutor (because every villain needs a mentor)
@@ -382,9 +394,9 @@ Learn Evil with the Evil Tutor (because every villain needs a mentor)
 #+end_src
 
 #+begin_src emacs-lisp
-  ;;Turns off elpaca-use-package-mode current declaration
-  ;;Note this will cause the declaration to be interpreted immediately (not deferred).
-  ;;Useful for configuring built-in emacs features.
+  ;; Turns off elpaca-use-package-mode current declaration
+  ;; Note this will cause the declaration to be interpreted immediately (not deferred).
+  ;; Useful for configuring built-in emacs features.
   (use-package emacs :ensure nil :config (setq ring-bell-function #'ignore))
 
   ;; Don't install anything. Defer execution of BODY
@@ -396,44 +408,7 @@ Learn Evil with the Evil Tutor (because every villain needs a mentor)
         :init(evil-terminal-cursor-changer-activate))) ; or (etcc-on)
 #+end_src
 
-*** Language Server Protocal
-
-Welcome to the mystical realm of LSP (Language Server Protocol)! 🌟✨🔮
-
-Behold, brave coder, as we summon the spirits of code completion,
-hover tooltips, and go-to-definition. Fear not, for our incantations
-are well-commented and our parentheses balanced.
-
-🧙‍♂️🔍📜
-
-#+begin_src emacs-lisp
-  (use-package lsp-mode
-    :init
-    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-    (setq lsp-keymap-prefix "C-c l")
-    :hook (;; If you want which-key integration, gaze into the abyss:
-           (lsp-mode . lsp-enable-which-key-integration))
-    :commands lsp)
-
-  ;; optionally;; Optionally, you can don your Helm of LSP or wield the Ivy Blade:
-  (use-package lsp-ui :commands lsp-ui-mode)
-  ;; if you are helm user
-  ;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
-  ;; if you are ivy user
-  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-
-  ;; And if you seek enlightenment through debugging, behold the Dap:
-  (use-package dap-mode)
-  (use-package dap-cpptools :ensure (:host github :repo "emacs-lsp/dap-mode"))
-  ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
-#+end_src
-
-Remember, young sorcerer, with great power comes great responsibility.
-May your code be bug-free and your tea always warm. 🫖🐛
-
-
-*** Ivy (Counsel)
+** Ivy (Counsel)
 + Ivy, a generic completion mechanism for Emacs.
 + Counsel, a collection of Ivy-enhanced versions of common Emacs commands.
 + Ivy-rich allows us to add descriptions alongside the commands in M-x.
@@ -472,14 +447,14 @@ May your code be bug-free and your tea always warm. 🫖🐛
                                  'ivy-rich-switch-buffer-transformer))
 #+end_src
 
-*** Syntax Checking
+** Syntax Checking
 
 #+begin_src emacs-lisp
   (use-package flycheck
     :hook ('after-init-hook #'global-flycheck-mode))
 #+end_src
 
-*** Local History
+** Local History
 Ah, the mystical Local History – where code snippets are whispered
 into the ether, stored in secret scrolls, and guarded by digital
 dragons. Because every line of code has a story to tell, and sometimes
@@ -497,9 +472,9 @@ it's an epic saga.
 
 Remember, your code's journey is like a rollercoaster: exhilarating, occasionally terrifying, and always worth the ride. 🎢📜
 
-*** Visual settings
-**** Font face
-***** Setting fonts
+** Visual settings
+*** Font face
+**** Setting fonts
 
 Fira Code is like that reliable friend who always remembers your parentheses.
 It's got ligatures that make your code look like a secret cypher. Plus, it's
@@ -554,7 +529,7 @@ will still be there, waiting to surprise you like a mischievous cat.
   (setq-default line-spacing 0.12)
 #+end_src
 
-***** Emojis
+**** Emojis
 
 Because life is too short for plain text. Let's add some sparkle!
 
@@ -631,7 +606,7 @@ let the magic guide your keystrokes! Abracadabra! ✨
       ))
 #+end_src
 
-**** Theme
+*** Theme
 
 #+begin_src emacs-lisp
   (use-package dracula-theme
@@ -641,7 +616,7 @@ let the magic guide your keystrokes! Abracadabra! ✨
     (load-theme 'dracula t))
 #+end_src
 
-**** Line numbers
+*** Line numbers
 
 Because counting lines is like playing hopscotch with code.
 Let's make it relative, like a friendly neighbor waving from the next line.
@@ -650,7 +625,7 @@ Let's make it relative, like a friendly neighbor waving from the next line.
 (setq display-line-numbers-type 'relative)
 #+end_src
 
-**** Dashboard
+*** Dashboard
 
 Because every adventure needs a starting point, and every coder deserves a grand entrance.
 
@@ -692,8 +667,7 @@ dashboard guide you to epic quests and bug-free adventures! 🚀🔮
 
 
 
-** Other Things
-*** General Keybindings
+** General Keybindings
 
 Because every keystroke is a dance move in the grand ballroom of code.
 
@@ -711,7 +685,7 @@ Because every keystroke is a dance move in the grand ballroom of code.
 
     ;; Navigate the code cosmos with finesse:
     (aih/leader-keys
-      "." '(find-file :wk "Find file")
+      "f f" '(find-file :wk "Find file")
       "f c" '((lambda () (interactive) (find-file (concat user-emacs-directory "config.org"))) :wk "Edit emacs config")
       "f D" '(find-file :wk "Delete file")
       "f s" '(save-buffer :wk "Save file"))
@@ -758,64 +732,6 @@ Because every keystroke is a dance move in the grand ballroom of code.
 
     )
 #+end_src
-
-*** Reload Emacs
-
-Because even code needs a fresh coat of magic sometimes.
-
-#+begin_src emacs-lisp
-  (defun reload-init-file ()
-    (interactive)
-    (load-file user-init-file)
-    (load-file user-init-file))
-#+end_src
-
-Invoke this spell with M-x reload-init-file, and watch your Emacs dance in delight!
-Remember, every function is a tiny incantation – may yours be bug-free and enchanting! 🌟🔮
-
-*** Grabbing source block content as a string
-
-Because sometimes code wants to be more than just bits and bytes – it wants to be poetry.
-
-#+name: grab
-#+begin_src emacs-lisp :var name="" :noweb-ref none :tangle no
-(if-let ((block-pos (org-babel-find-named-block name))
-         (block (org-element-at-point block-pos)))
-    (format "%S" (string-trim (org-element-property :value block)))
-  ;; look for :noweb-ref matches
-  (let (block-contents)
-    (org-element-cache-map
-     (lambda (src)
-       (when (and (not (org-in-commented-heading-p nil src))
-                  (not (org-in-archived-heading-p nil src))
-                  (let* ((lang (org-element-property :language src))
-                         (params
-                          (apply
-                           #'org-babel-merge-params
-                           (append
-                            (org-with-point-at (org-element-property :begin src)
-                              (org-babel-params-from-properties lang t))
-                            (mapcar
-                             (lambda (h)
-                               (org-babel-parse-header-arguments h t))
-                             (cons (org-element-property :parameters src)
-                                   (org-element-property :header src))))))
-                         (ref (alist-get :noweb-ref params)))
-                    (equal ref name)))
-         (push (org-babel--normalize-body src)
-               block-contents)))
-     :granularity 'element
-     :restrict-elements '(src-block))
-    (and block-contents
-         (format "%S"
-                 (mapconcat
-                  #'identity
-                  (nreverse block-contents)
-                  "\n\n")))))
-#+end_src
-
-There we go, that's all it takes! This can be used via the form =<<grab("block-name")>>=.
-
 
 * Packages
 
@@ -909,7 +825,7 @@ anticipates your next move and suggests completions for you.
 #+begin_src emacs-lisp
   (use-package company 
     :ensure t
-    :config
+    :custom
     (setq company-idle-delay 0.5
           company-minimum-prefix-length 2)
     (setq company-show-numbers t)
@@ -921,30 +837,6 @@ code like a skilled weaver. Completion will start automatically after
 you type a few letters, and you can navigate through the candidates
 using C-n, C-p, <return>, or <tab>. Press <f1> to see documentation or
 C-w to view the source.
-
-*** Projectile
-
-;Because every project deserves a guiding star.
-
-Projectile is an Emacs package that provides project management and
-navigation features. It helps you organize your codebase, switch
-between projects effortlessly, and find files quickly. 
-
-
-#+begin_src emacs-lisp
-  (use-package projectile
-    :config
-    (projectile-mode 1)
-    (if (eq system-type 'darwin)
-        (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map) ;; Recommended keymap prefix on macOS
-      (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map) ;; Recommended keymap prefix on Windows/Linux
-      )
-    )
-#+end_src
-
-Once you've invoked Projectile, it will become your trusty guide
-through the code wilderness. Use M-x projectile-find-file to explore
-files within your project, and let your keystrokes lead the way! 🌟🗺️ 
 
 ** Visuals
 
@@ -1224,10 +1116,6 @@ files can hang out and chat with the squirrels.
   :after (treemacs evil)
   :ensure t)
 
-(use-package treemacs-projectile
-  :after (treemacs projectile)
-  :ensure t)
-
 (use-package treemacs-icons-dired
   :hook (dired-mode . treemacs-icons-dired-enable-once)
   :ensure t)
@@ -1249,7 +1137,6 @@ files can hang out and chat with the squirrels.
 
 *** Rainbow Mode
 Because every color deserves to shine like a rainbow.
-
 Rainbow Mode enhances your Emacs experience by displaying the actual
 color as a background for any hex color value (e.g., #ffffff). It's
 like having a magical palette where your code can express its true

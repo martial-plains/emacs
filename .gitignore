@@ -7,6 +7,10 @@
 auto-save-list
 tramp
 .\#*
+/.cache
+
+# emacs native
+/eln-cache/
 
 # backup files
 backup/
@@ -64,5 +68,4 @@ recentf
 # projectile
 projectile-bookmarks.eld
 
-# neovim cache
-/.cache
+

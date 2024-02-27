@@ -1,5 +1,7 @@
 (add-to-list 'load-path "~/.config/emacs/scripts/")
 
+(setq native-comp-async-report-warnings-errors nil)
+
 (require 'elpaca-setup)  ;; The Elpaca Package Manager
 (require 'buffer-move)   ;; Buffer-move for better window management
 (require 'utils)
@@ -119,11 +121,23 @@
   (setq evil-collection-mode-list '(dashboard dired ibuffer))
   (evil-collection-init))
 
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
+
+(use-package evil-commentary
+  :init (evil-commentary-mode))
+
+(use-package evil-easymotion
+  :config
+  (evilem-default-keybindings "SPC"))
+
 (use-package evil-tutor)
 
-;;Turns off elpaca-use-package-mode current declaration
-;;Note this will cause the declaration to be interpreted immediately (not deferred).
-;;Useful for configuring built-in emacs features.
+;; Turns off elpaca-use-package-mode current declaration
+;; Note this will cause the declaration to be interpreted immediately (not deferred).
+;; Useful for configuring built-in emacs features.
 (use-package emacs :ensure nil :config (setq ring-bell-function #'ignore))
 
 ;; Don't install anything. Defer execution of BODY
@@ -133,27 +147,6 @@
 (if (is-in-terminal)
     (use-package evil-terminal-cursor-changer
       :init(evil-terminal-cursor-changer-activate))) ; or (etcc-on)
-
-(use-package lsp-mode
-  :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  (setq lsp-keymap-prefix "C-c l")
-  :hook (;; If you want which-key integration, gaze into the abyss:
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp)
-
-;; optionally;; Optionally, you can don your Helm of LSP or wield the Ivy Blade:
-(use-package lsp-ui :commands lsp-ui-mode)
-;; if you are helm user
-;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
-;; if you are ivy user
-(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-
-;; And if you seek enlightenment through debugging, behold the Dap:
-(use-package dap-mode)
-(use-package dap-cpptools :ensure (:host github :repo "emacs-lsp/dap-mode"))
-;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 
 (use-package counsel
   :after ivy
@@ -334,7 +327,7 @@
 
   ;; Navigate the code cosmos with finesse:
   (aih/leader-keys
-    "." '(find-file :wk "Find file")
+    "f f" '(find-file :wk "Find file")
     "f c" '((lambda () (interactive) (find-file (concat user-emacs-directory "config.org"))) :wk "Edit emacs config")
     "f D" '(find-file :wk "Delete file")
     "f s" '(save-buffer :wk "Save file"))
@@ -381,11 +374,6 @@
 
   )
 
-(defun reload-init-file ()
-  (interactive)
-  (load-file user-init-file)
-  (load-file user-init-file))
-
 (use-package which-key
   :init
   (which-key-mode 1)
@@ -407,20 +395,11 @@
 
 (use-package company 
   :ensure t
-  :config
+  :custom
   (setq company-idle-delay 0.5
         company-minimum-prefix-length 2)
   (setq company-show-numbers t)
   (add-hook 'evil-normal-state-entry-hook #'company-abort)) ;; Make aborting less annoying.
-
-(use-package projectile
-  :config
-  (projectile-mode 1)
-  (if (eq system-type 'darwin)
-      (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map) ;; Recommended keymap prefix on macOS
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map) ;; Recommended keymap prefix on Windows/Linux
-    )
-  )
 
 (use-package info-colors
   :commands (info-colors-fontify-node))
@@ -602,10 +581,6 @@
 
 (use-package treemacs-evil
   :after (treemacs evil)
-  :ensure t)
-
-(use-package treemacs-projectile
-  :after (treemacs projectile)
   :ensure t)
 
 (use-package treemacs-icons-dired
