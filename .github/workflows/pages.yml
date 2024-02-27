@@ -33,7 +33,7 @@ jobs:
         run: |
           emacs -Q --script export-to-html.el
           mkdir dist
-          mv config.html /dist/index.html
+          mv config.html dist/index.html
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
