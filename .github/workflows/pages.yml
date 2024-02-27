@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: purcell/setup-emacs@master
         with:
-          version: 30.0
+          version: 29.1
       - name: "Export org to html"
         run: |
           emacs -Q --script export-to-html.el
