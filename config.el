@@ -50,37 +50,6 @@
 
 (advice-add 'prompt-for-buffer :after #'prompt-for-buffer-prompt-for-buffer-around)
 
-(with-eval-after-load 'general
-  (with-eval-after-load 'evil
-    ;; setup up 'SPC' as the global leader key
-    (general-create-definer aih/leader-keys
-      :states '(normal insert virtual emacs)
-      :keymaps 'override
-      :prefix "SPC" ;; set leader
-      :global-prefix "M-SPC") ;; access leader in insert mode
-
-    (aih/leader-keys
-      "w" '(:ignore t :wk "Windows")
-      "w q" '(evil-window-delete :wk "Close window")
-      "w n" '(evil-window-new :wk "New window")
-      ;; Resizing
-      "w +" '(enlarge-window :wk "Increase window height")
-      "w -" '(shrink-window :wk "Increase window height")
-      ;; Navigation
-      "w h" '(evil-window-left :wk "Window left")
-      "w j" '(evil-window-down :wk "Window down")
-      "w k" '(evil-window-up :wk "Window up")
-      "w l" '(evil-window-right :wk "Window right")
-      "w w" '(evil-window-next :wk "Goto next window")
-      ;; Splitting Windows
-      "w s" '(evil-window-split :wk "Horizontal split window")
-      "w v" '(evil-window-vsplit :wk "Vertical split window")
-      ;; Swapping Windows
-      "w H" '(buf-move-left :wk "Buffer move left")
-      "w J" '(buf-move-down :wk "Buffer move down")
-      "w K" '(buf-move-up :wk "Buffer move up")
-      "w L" '(buf-move-right :wk "Buffer move right"))))
-
 (global-display-line-numbers-mode 1)
 (global-visual-line-mode t)
 
@@ -143,7 +112,7 @@
 ;; Don't install anything. Defer execution of BODY
 (elpaca nil (message "deferred"))
 
-;; Display the cursor correctly in the terminal (because even cursors deserve respect)
+  ;; Display the cursor correctly in the terminal (because even cursors deserve respect)
 (if (is-in-terminal)
     (use-package evil-terminal-cursor-changer
       :init(evil-terminal-cursor-changer-activate))) ; or (etcc-on)
@@ -300,7 +269,6 @@
   (setq dashboard-items '((recents . 5)
                           (agenda . 5 )
                           (bookmarks . 3)
-                          (projects . 3)
                           (registers . 3)))
   :custom
   ;; Modify heading icons for that extra dash of flair:
@@ -330,7 +298,7 @@
     "f f" '(find-file :wk "Find file")
     "f c" '((lambda () (interactive) (find-file (concat user-emacs-directory "config.org"))) :wk "Edit emacs config")
     "f D" '(find-file :wk "Delete file")
-    "f s" '(save-buffer :wk "Save file"))
+    "w" '(save-buffer :wk "Save file"))
 
   ;; Exit gracefully (because even code needs an exit strategy):
   (aih/leader-keys
@@ -395,10 +363,11 @@
 
 (use-package company 
   :ensure t
-  :custom
-  (setq company-idle-delay 0.5
-        company-minimum-prefix-length 2)
-  (setq company-show-numbers t)
+  :config
+  (setq company-idle-delay 0
+        company-minimum-prefix-length 1
+        company-show-numbers t)
+  (global-company-mode)
   (add-hook 'evil-normal-state-entry-hook #'company-abort)) ;; Make aborting less annoying.
 
 (use-package info-colors
@@ -752,7 +721,7 @@
       "O" '(org-ol-tree :wk "Outline"))))
 
 (use-package org-auto-tangle
-  :load-path "site-lisp/org-auto-tangle/"    ;; this line is necessary only if you cloned the repo in your site-lisp directory 
+  :ensure (:host github :repo "yilkalargaw/org-auto-tangle")    ;; this line is necessary only if you cloned the repo in your site-lisp directory 
   :defer t
   :hook (org-mode . org-auto-tangle-mode))
 
@@ -852,7 +821,35 @@
                          (require 'lsp-pyright)
                          (lsp))))  ; or lsp-deferred
 
-(use-package rustic)
+(use-package rustic
+  :hook
+  ;; auto-save mode.
+  (rustic-mode . rustic-mode-auto-save-hook)
+  :init
+  ;; the default lsp is lsp-mode but we can changet to eglot by.
+  ;; uncoment if you are using eglot mode.
+  ;; (setq rustic-lsp-client 'eglot)
+
+  :bind (:map rustic-mode-map
+              ("M-j" . lsp-ui-imenu)
+              ("M-?" . lsp-find-references)
+              ;; ;; list flyckeck errors
+              ;; ("C-c C-c l" . flycheck-list-errors)
+              ;; ("C-c C-c a" . lsp-execute-code-action)
+              ;; ("C-c C-c r" . lsp-rename)
+              ;; ("C-c C-c q" . lsp-workspace-restart)
+              ;; ("C-c C-c Q" . lsp-workspace-shutdown)
+              ;; ("C-c C-c s" . lsp-rust-analyzer-status)
+              ;; compile and run cargo
+              ("<f5>" . rustic-compile))
+  :config
+  ;; set rustfmt on save
+  (setq rustic-format-on-save t)
+  ;; auto-save.
+  (defun rustic-mode-auto-save-hook ()
+    "Enable auto-saving in rustic-mode buffers."
+    (when buffer-file-name
+      (setq-local compilation-ask-about-save t))))
 
 (use-package lsp-sourcekit
   :after lsp-mode
