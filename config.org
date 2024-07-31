@@ -1246,6 +1246,13 @@ your text buffers snuggle up! 🌟📜
 :CUSTOM_ID: org
 :end:
 
+**** Latex
+
+#+begin_src emacs-lisp
+  (setq org-format-latex-options 
+        (plist-put org-format-latex-options :scale 2))
+#+end_src
+
 **** Git diffs
 
 Protesilaos has paved the way for better git diff chunk headings, and
