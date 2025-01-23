@@ -362,7 +362,7 @@ Learn Evil with the Evil Tutor (because every villain needs a mentor)
     (use-package emacs :ensure nil :config (setq ring-bell-function #'ignore))
 
     ;; Don't install anything. Defer execution of BODY
-    (elpaca nil (message "deferred"))
+    ;; (elpaca nil (message "deferred"))
 
       ;; Display the cursor correctly in the terminal (because even cursors deserve respect)
     (if (is-in-terminal)
