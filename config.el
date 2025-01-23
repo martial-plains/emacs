@@ -110,7 +110,7 @@
 (use-package emacs :ensure nil :config (setq ring-bell-function #'ignore))
 
 ;; Don't install anything. Defer execution of BODY
-(elpaca nil (message "deferred"))
+;; (elpaca nil (message "deferred"))
 
   ;; Display the cursor correctly in the terminal (because even cursors deserve respect)
 (if (is-in-terminal)
@@ -231,17 +231,17 @@
 (with-eval-after-load 'general
   (when (>= emacs-major-version 29)
     (general-create-definer aih/leader-keys
-      :states '(normal insert virtual emacs)
-      :keymaps 'override
-      :prefix "SPC" ;; set leader
-      :global-prefix "M-SPC") ;; access leader in insert mode
+	:states '(normal insert virtual emacs)
+	:keymaps 'override
+	:prefix "SPC" ;; set leader
+	:global-prefix "M-SPC") ;; access leader in insert mode
     (aih/leader-keys
-      "e" '(:ignore t :wk "Emoji")
-      "e s" '(emoji-search :wk "Search")
-      "e r" '(emoji-recent :wk "Recent")
-      "e l" '(emoji-list :wk "List")
-      "e d" '(emoji-describe :wk "Describe")
-      "e i" '(emoji-insert :wk "Insert"))
+	"e" '(:ignore t :wk "Emoji")
+	"e s" '(emoji-search :wk "Search")
+	"e r" '(emoji-recent :wk "Recent")
+	"e l" '(emoji-list :wk "List")
+	"e d" '(emoji-describe :wk "Describe")
+	"e i" '(emoji-insert :wk "Insert"))
     ))
 
 (use-package dracula-theme
